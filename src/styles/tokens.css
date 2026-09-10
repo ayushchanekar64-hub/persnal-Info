@@ -1,0 +1,122 @@
+/* ===================================================
+   MYNEXUS DESIGN TOKENS & COLOR SYSTEM
+   "One Place. Everything You."
+   PURE BLACK OLED DARK THEME
+=================================================== */
+
+:root {
+  /* Brand Primary Palette (Sophisticated Purple / Indigo) */
+  --primary-50: rgba(139, 92, 246, 0.1);
+  --primary-100: rgba(139, 92, 246, 0.18);
+  --primary-200: rgba(139, 92, 246, 0.28);
+  --primary-300: #C4B5FD;
+  --primary-400: #A78BFA;
+  --primary-500: #8B5CF6;
+  --primary-600: #7C3AED;
+  --primary-700: #6D28D9;
+  --primary-800: #5B21B6;
+  --primary-900: #4C1D95;
+
+  /* Brand Secondary / Accent Palette (Vibrant Violet) */
+  --accent-50: rgba(168, 85, 247, 0.1);
+  --accent-100: rgba(168, 85, 247, 0.18);
+  --accent-200: rgba(168, 85, 247, 0.28);
+  --accent-300: #D8B4FE;
+  --accent-500: #A855F7;
+  --accent-600: #9333EA;
+
+  /* Semantic Feedback Palette (Subtle & Refined) */
+  --success-50: rgba(16, 185, 129, 0.1);
+  --success-100: rgba(16, 185, 129, 0.2);
+  --success-500: #10B981;
+  --success-600: #059669;
+
+  --warning-50: rgba(245, 158, 11, 0.1);
+  --warning-100: rgba(245, 158, 11, 0.2);
+  --warning-500: #F59E0B;
+  --warning-600: #D97706;
+
+  --danger-50: rgba(239, 68, 68, 0.1);
+  --danger-100: rgba(239, 68, 68, 0.2);
+  --danger-500: #EF4444;
+  --danger-600: #DC2626;
+
+  --info-50: rgba(14, 165, 233, 0.1);
+  --info-100: rgba(14, 165, 233, 0.2);
+  --info-500: #0EA5E9;
+
+  /* Neutral Surface Palette (Pure Black OLED Dashboard) */
+  --bg-app: #000000;
+  --bg-sidebar: #000000;
+  --bg-header: #000000;
+  --bg-surface: #080808;
+  --bg-surface-elevated: #0C0C0C;
+  --bg-surface-muted: #111111;
+  --bg-surface-hover: #141414;
+
+  /* Borders & Dividers (Strictly Subtle Grays: #1A1A1A / #222222) */
+  --border-subtle: #141414;
+  --border-light: #1A1A1A;
+  --border-medium: #222222;
+  --border-focus: rgba(139, 92, 246, 0.45);
+
+  /* Typography Colors */
+  --text-primary: #FFFFFF;
+  --text-secondary: #D1D5DB;
+  --text-tertiary: #9CA3AF;
+  --text-muted: #6B7280;
+  --text-white: #FFFFFF;
+
+  /* Shadows (OLED Deep Elevation, no gray bloom) */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.6);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.8);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.8), 0 0 1px rgba(255, 255, 255, 0.04);
+  --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.9), 0 0 1px rgba(255, 255, 255, 0.08);
+  --shadow-modal: 0 24px 50px rgba(0, 0, 0, 0.95), 0 0 1px rgba(255, 255, 255, 0.1);
+
+  /* Geometry & Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: 300ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Layout dimensions */
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 76px;
+  --header-height: 68px;
+  --right-panel-width: 320px;
+}
+
+/* Explicit dark theme matching Pure Black OLED */
+[data-theme="dark"] {
+  --bg-app: #000000;
+  --bg-sidebar: #000000;
+  --bg-header: #000000;
+  --bg-surface: #080808;
+  --bg-surface-elevated: #0C0C0C;
+  --bg-surface-muted: #111111;
+  --bg-surface-hover: #141414;
+
+  --border-subtle: #141414;
+  --border-light: #1A1A1A;
+  --border-medium: #222222;
+  --border-focus: rgba(139, 92, 246, 0.45);
+
+  --text-primary: #FFFFFF;
+  --text-secondary: #D1D5DB;
+  --text-tertiary: #9CA3AF;
+  --text-muted: #6B7280;
+  --text-white: #FFFFFF;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.6);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.8);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.8), 0 0 1px rgba(255, 255, 255, 0.04);
+  --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.9), 0 0 1px rgba(255, 255, 255, 0.08);
+  --shadow-modal: 0 24px 50px rgba(0, 0, 0, 0.95), 0 0 1px rgba(255, 255, 255, 0.1);
+}

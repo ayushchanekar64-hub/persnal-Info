@@ -2,7 +2,11 @@
 // Connects to FastAPI Backend at http://127.0.0.1:8000/api/v1
 // Ensures Zero-Trust Bearer Token Authorization on every authenticated request
 
-const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
+const API_BASE = import.meta.env.VITE_API_URL || (
+  typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')
+    ? 'https://mind-os-backend.onrender.com/api/v1'
+    : '/api/v1'
+);
 
 class ApiError extends Error {
   constructor(message, status, data) {

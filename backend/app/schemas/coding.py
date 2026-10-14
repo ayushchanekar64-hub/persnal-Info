@@ -55,3 +55,56 @@ class CodingResponse(CodingBase):
     created_at: datetime
     updated_at: datetime
     model_config = ConfigDict(from_attributes=True)
+
+
+class CodingSessionBase(BaseModel):
+    date: str
+    start_time: Optional[str] = None
+    end_time: Optional[str] = None
+    duration_minutes: Optional[int] = 0
+    problems_solved: Optional[int] = 0
+    topics_practiced: Optional[str] = None
+    notes: Optional[str] = None
+
+class CodingSessionCreate(CodingSessionBase):
+    pass
+
+class CodingSessionResponse(CodingSessionBase):
+    id: str
+    user_id: str
+    created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CodingMistakeBase(BaseModel):
+    problem_id: Optional[str] = None
+    problem_title: Optional[str] = None
+    topic: Optional[str] = None
+    why_failed: Optional[str] = None
+    correct_approach: Optional[str] = None
+    what_to_remember: Optional[str] = None
+    review_status: Optional[str] = "Needs Review"
+
+class CodingMistakeCreate(CodingMistakeBase):
+    pass
+
+class CodingMistakeUpdate(BaseModel):
+    problem_title: Optional[str] = None
+    topic: Optional[str] = None
+    why_failed: Optional[str] = None
+    correct_approach: Optional[str] = None
+    what_to_remember: Optional[str] = None
+    review_status: Optional[str] = None
+
+class CodingMistakeResponse(CodingMistakeBase):
+    id: str
+    user_id: str
+    created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CodingAchievementResponse(BaseModel):
+    id: str
+    achievement_id: str
+    unlocked_at: datetime
+    model_config = ConfigDict(from_attributes=True)

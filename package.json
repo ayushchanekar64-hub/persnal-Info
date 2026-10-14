@@ -1,14 +1,16 @@
 {
-  "name": "mynexus-frontend",
+  "name": "mind-os",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "api": "python -m uvicorn backend.app.main:app --reload",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@monaco-editor/react": "^4.7.0",
     "canvas-confetti": "^1.9.4",
     "lucide-react": "^1.16.0",
     "react": "^18.3.1",

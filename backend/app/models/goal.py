@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from sqlalchemy import Column, String, Boolean, DateTime, Text, ForeignKey, Integer
 from sqlalchemy.orm import relationship
-from backend.app.db.base import Base
+from backend.app.db.base import Base, utc_now
 
 
 class Goal(Base):
@@ -21,8 +21,8 @@ class Goal(Base):
     status = Column(String(50), default="In Progress")  # Not Started, In Progress, Completed, Paused, Cancelled
     color = Column(String(50), default="primary")
     tags = Column(Text, default="[]")  # JSON string
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=utc_now)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
 
     # Relationships
     user = relationship("User", back_populates="goals")
@@ -39,6 +39,6 @@ class Milestone(Base):
     target_date = Column(String(100), nullable=True)
     completed = Column(Boolean, default=False)
     completed_at = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=utc_now)
 
     goal = relationship("Goal", back_populates="milestones")

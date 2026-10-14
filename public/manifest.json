@@ -1,0 +1,23 @@
+{
+  "name": "MIND OS — Personal Operating System",
+  "short_name": "MIND OS",
+  "description": "Executive Personal Operating System, Code Studio, and Intelligence Workspace.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B0C10",
+  "theme_color": "#7C3AED",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

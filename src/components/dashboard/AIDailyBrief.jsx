@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import {
   Sparkles,
   Send,
-  Bot
+  Bot,
+  Zap,
+  TrendingUp,
+  Target,
+  CheckCircle2
 } from 'lucide-react';
 
 export default function AIDailyBrief({ aiBrief = { bullets: [] }, tasks = [], goals = [] }) {
@@ -25,70 +29,65 @@ export default function AIDailyBrief({ aiBrief = { bullets: [] }, tasks = [], go
 
     setTimeout(() => {
       setIsThinking(false);
-      // Only generate insight if real user tasks or goals exist; otherwise show empty state message
-      if (tasks.length === 0 && goals.length === 0) {
+      const pendingTasks = tasks.filter(t => !t.completed);
+      if (q.toLowerCase().includes("focus") || q.toLowerCase().includes("today")) {
         setAiAnswer(
-          "Your AI insights will appear here once MYNEXUS has enough activity to analyze."
+          pendingTasks.length > 0
+            ? `Priority Focus: You have ${pendingTasks.length} pending task(s). Recommended first action: "${pendingTasks[0].title}".`
+            : "All scheduled items are up to date! Consider logging a new milestone or reviewing upcoming goals."
+        );
+      } else if (q.toLowerCase().includes("goal")) {
+        setAiAnswer(
+          goals.length > 0
+            ? `Active Goals: Tracking ${goals.length} active goal(s). Continue maintaining momentum on key milestones.`
+            : "No active goals tracked yet. Define your first target to unlock automated pacing insights."
         );
       } else {
-        const pendingTasks = tasks.filter(t => !t.completed);
-        if (q.toLowerCase().includes("focus") || q.toLowerCase().includes("today")) {
-          setAiAnswer(
-            pendingTasks.length > 0
-              ? `Priority Focus Recommendation: You have ${pendingTasks.length} pending task(s). Consider starting with "${pendingTasks[0].title}".`
-              : "All tasks for today are completed. Consider reviewing long-term goals or planning upcoming work."
-          );
-        } else if (q.toLowerCase().includes("goal")) {
-          setAiAnswer(
-            goals.length > 0
-              ? `You currently have ${goals.length} active goal(s) tracked. Continue making progress on your milestones.`
-              : "No active goals found. Define goals to enable goal progress insights."
-          );
-        } else {
-          setAiAnswer(
-            "Your AI insights will appear here once MYNEXUS has enough activity to analyze."
-          );
-        }
+        setAiAnswer(
+          "MIND OS AI is active. As you log tasks, goals, and study sessions, your personalized intelligence brief will continuously adapt."
+        );
       }
-    }, 400);
+    }, 350);
   };
 
   const bullets = aiBrief?.bullets || [];
 
   return (
-    <div className="ai-brief-card">
+    <div className="ai-brief-card motion-card animate-fade-in-up stagger-2">
       {/* Header */}
       <div className="ai-brief-header">
         <div className="ai-brief-title-group">
           <div className="ai-brief-title">
             <Sparkles size={18} color="var(--primary-600)" />
-            <span>{aiBrief?.title || "AI Daily Brief"}</span>
+            <span>{aiBrief?.title || "MIND OS Intelligence Brief"}</span>
           </div>
           <p className="ai-brief-subtitle">
-            {aiBrief?.subtitle || "Here's what deserves your attention today."}
+            {aiBrief?.subtitle || "Real-time automated briefing tailored to your focus & productivity."}
           </p>
         </div>
         <div className="ai-badge">
-          <Sparkles size={12} />
+          <Zap size={12} />
           <span>Core Intelligence</span>
         </div>
       </div>
 
-      {/* Bulleted Insights or Empty State Notice */}
+      {/* Bulleted Insights or High-End Welcome Summary */}
       <div className="ai-brief-bullets">
         {bullets.length === 0 ? (
-          <div
-            style={{
-              padding: '0.85rem 1rem',
-              borderRadius: 'var(--radius-md)',
-              background: 'var(--bg-surface-muted)',
-              fontSize: '0.835rem',
-              color: 'var(--text-secondary)',
-              lineHeight: 1.5
-            }}
-          >
-            Your AI insights will appear here once MYNEXUS has enough activity to analyze.
-          </div>
+          <>
+            <div className="ai-brief-item">
+              <span className="ai-bullet-dot" />
+              <span>
+                <strong>Day Kickoff:</strong> Ready to build momentum. Add your core 1-3 priorities for today.
+              </span>
+            </div>
+            <div className="ai-brief-item">
+              <span className="ai-bullet-dot accent" />
+              <span>
+                <strong>Goal Alignment:</strong> Set concrete targets in Career or Technical tracks to unlock progress forecasting.
+              </span>
+            </div>
+          </>
         ) : (
           bullets.map((b) => (
             <div key={b.id} className="ai-brief-item">
@@ -99,7 +98,7 @@ export default function AIDailyBrief({ aiBrief = { bullets: [] }, tasks = [], go
         )}
       </div>
 
-      {/* Ask MYNEXUS Input Bar */}
+      {/* Ask MIND OS Input Bar */}
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -111,7 +110,7 @@ export default function AIDailyBrief({ aiBrief = { bullets: [] }, tasks = [], go
           <input
             type="text"
             className="ai-ask-input"
-            placeholder="Ask MYNEXUS: What should I focus on today?"
+            placeholder="Ask MIND OS: What should I focus on today?"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -157,7 +156,7 @@ export default function AIDailyBrief({ aiBrief = { bullets: [] }, tasks = [], go
         <div className="ai-response-box">
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600, color: 'var(--primary-600)', marginBottom: 4 }}>
             <Sparkles size={14} />
-            <span>MYNEXUS Recommendation</span>
+            <span>MIND OS Recommendation</span>
           </div>
           <p>{aiAnswer}</p>
         </div>

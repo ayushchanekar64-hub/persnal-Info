@@ -32,7 +32,7 @@ async def get_career_profile(
     )
     profile = result.scalars().first()
     if not profile:
-        profile = CareerProfile(user_id=current_user.id, target_role="Senior Full-Stack Engineer")
+        profile = CareerProfile(user_id=current_user.id, target_role="")
         db.add(profile)
         await db.commit()
         await db.refresh(profile)

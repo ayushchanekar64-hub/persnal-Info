@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from backend.app.db.session import get_db
+from backend.app.db.base import utc_now
 from backend.app.models.user import User
 from backend.app.models.task import Task, Subtask
 from backend.app.models.goal import Goal
@@ -153,7 +154,7 @@ async def update_task(
 
     if "completed" in update_dict:
         if task.completed:
-            task.completed_at = datetime.now(timezone.utc)
+            task.completed_at = utc_now()
             task.status = "Completed"
         else:
             task.completed_at = None
@@ -182,7 +183,7 @@ async def toggle_task_completion(
 
     task.completed = not task.completed
     if task.completed:
-        task.completed_at = datetime.now(timezone.utc)
+        task.completed_at = utc_now()
         task.status = "Completed"
         title = f'Completed "{task.title}"'
         color = "var(--success-500)"
@@ -243,3 +244,52 @@ async def add_subtask(
     await db.commit()
     await db.refresh(subtask)
     return subtask
+
+
+@router.post("/{task_id}/subtasks/{subtask_id}/toggle", response_model=SubtaskResponse)
+async def toggle_subtask(
+    task_id: str,
+    subtask_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(Subtask).join(Task).where(
+            Subtask.id == subtask_id,
+            Subtask.task_id == task_id,
+            Task.user_id == current_user.id
+        )
+    )
+    subtask = result.scalars().first()
+    if not subtask:
+        raise HTTPException(status_code=404, detail="Subtask not found")
+
+    subtask.completed = not subtask.completed
+    db.add(subtask)
+    await db.commit()
+    await db.refresh(subtask)
+    return subtask
+
+
+@router.delete("/{task_id}/subtasks/{subtask_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_subtask(
+    task_id: str,
+    subtask_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(Subtask).join(Task).where(
+            Subtask.id == subtask_id,
+            Subtask.task_id == task_id,
+            Task.user_id == current_user.id
+        )
+    )
+    subtask = result.scalars().first()
+    if not subtask:
+        raise HTTPException(status_code=404, detail="Subtask not found")
+
+    await db.delete(subtask)
+    await db.commit()
+    return None
+

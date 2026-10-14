@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from sqlalchemy import Column, String, Float, Boolean, DateTime, Text, ForeignKey
 from sqlalchemy.orm import relationship
-from backend.app.db.base import Base
+from backend.app.db.base import Base, utc_now
 
 
 class FinanceTransaction(Base):
@@ -18,7 +18,7 @@ class FinanceTransaction(Base):
     description = Column(String(255), nullable=True)
     is_recurring = Column(Boolean, default=False)
     notes = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=utc_now)
 
     user = relationship("User", back_populates="transactions")
 
@@ -31,6 +31,6 @@ class FinanceBudget(Base):
     category = Column(String(100), nullable=False)
     budget_amount = Column(Float, nullable=False)
     period = Column(String(50), default="Monthly")
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=utc_now)
 
     user = relationship("User", back_populates="budgets")

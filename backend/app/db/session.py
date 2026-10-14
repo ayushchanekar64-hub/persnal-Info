@@ -17,6 +17,7 @@ try:
         echo=False,
         future=True,
         pool_pre_ping=True,
+        connect_args={"timeout": 2}
     )
 except Exception as e:
     logger.warning(f"Failed to create primary engine with {settings.DATABASE_URL}: {e}")
@@ -50,6 +51,9 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 from sqlalchemy import text
 
 async def _auto_migrate(conn):
+    is_postgres = "postgres" in str(conn.engine.url)
+    date_type = "TIMESTAMP" if is_postgres else "DATETIME"
+
     columns_to_add = [
         ("tasks", "estimated_time", "VARCHAR(50)"),
         ("goals", "target_date", "VARCHAR(100)"),
@@ -59,12 +63,26 @@ async def _auto_migrate(conn):
         ("coding_problems", "time_taken", "VARCHAR(50)"),
         ("coding_problems", "solution_notes", "TEXT"),
         ("coding_problems", "mistake_learning", "TEXT"),
+        ("users", "phone", "VARCHAR(50)"),
+        ("users", "two_factor_enabled", "BOOLEAN DEFAULT TRUE"),
+        ("users", "recovery_pin_hash", "VARCHAR(255)"),
+        ("users", "recovery_attempts", "INTEGER DEFAULT 0"),
+        ("users", "recovery_locked_until", date_type),
+        ("users", "failed_login_attempts", "INTEGER DEFAULT 0"),
+        ("users", "login_locked_until", date_type),
+        ("users", "token_version", "INTEGER DEFAULT 1"),
     ]
     for table, col, col_type in columns_to_add:
         try:
-            await conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {col} {col_type}"))
-        except Exception:
-            pass
+            if is_postgres:
+                await conn.execute(text(f"ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {col} {col_type}"))
+            else:
+                res = await conn.execute(text(f"PRAGMA table_info({table})"))
+                existing_cols = [row[1] for row in res.fetchall()]
+                if col not in existing_cols:
+                    await conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {col} {col_type}"))
+        except Exception as e:
+            logger.warning(f"Auto-migration skipped for {table}.{col}: {e}")
 
 
 async def init_db():

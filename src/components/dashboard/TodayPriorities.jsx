@@ -45,7 +45,7 @@ export default function TodayPriorities({ tasks = [], onToggleTask, onOpenQuickA
   };
 
   return (
-    <div className="nexus-card">
+    <div className="nexus-card motion-card animate-fade-in-up stagger-3">
       <div className="nexus-card-header">
         <div className="nexus-card-title-group">
           <div className="stat-icon-wrapper" style={{ background: 'var(--primary-50)', color: 'var(--primary-600)' }}>
@@ -87,9 +87,10 @@ export default function TodayPriorities({ tasks = [], onToggleTask, onOpenQuickA
           )}
 
           <button
-            className="btn btn-secondary btn-sm"
+            className="btn btn-primary btn-sm"
             onClick={() => onOpenQuickAction('task')}
             title="Add new task"
+            style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem' }}
           >
             <Plus size={14} />
             <span>Add</span>
@@ -99,16 +100,22 @@ export default function TodayPriorities({ tasks = [], onToggleTask, onOpenQuickA
 
       {tasks.length === 0 ? (
         <EmptyState
+          icon={CheckSquare}
           title="No tasks yet"
           description="Add your first task to start organizing your day."
           actionLabel="+ Add Task"
+          presets={[
+            { label: 'Morning Deep Work' },
+            { label: 'Review Pull Requests' },
+            { label: 'System Design Session' }
+          ]}
           onAction={() => onOpenQuickAction('task')}
         />
       ) : filteredTasks.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--text-muted)' }}>
-          <CheckCircle2 size={32} style={{ margin: '0 auto 0.5rem', opacity: 0.6, color: 'var(--success-500)' }} />
-          <p style={{ fontWeight: 500, fontSize: '0.875rem', color: 'var(--text-secondary)' }}>All caught up!</p>
-          <p style={{ fontSize: '0.78rem' }}>No tasks found in this filter.</p>
+        <div style={{ textAlign: 'center', padding: '1.5rem 1rem', color: 'var(--text-muted)' }}>
+          <CheckCircle2 size={28} style={{ margin: '0 auto 0.4rem', opacity: 0.6, color: 'var(--success-500)' }} />
+          <p style={{ fontWeight: 500, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>All caught up!</p>
+          <p style={{ fontSize: '0.75rem' }}>No tasks found in this filter.</p>
         </div>
       ) : (
         <div className="priorities-list">

@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from sqlalchemy import Column, String, Boolean, DateTime, Text, ForeignKey
 from sqlalchemy.orm import relationship
-from backend.app.db.base import Base
+from backend.app.db.base import Base, utc_now
 
 
 class Notification(Base):
@@ -15,6 +15,6 @@ class Notification(Base):
     type = Column(String(50), default="info")  # deadline, reminder, system, warning
     link = Column(String(255), nullable=True)
     read = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), index=True)
+    created_at = Column(DateTime, default=utc_now, index=True)
 
     user = relationship("User", back_populates="notifications")

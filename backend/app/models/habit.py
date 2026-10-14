@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from sqlalchemy import Column, String, Boolean, DateTime, Text, ForeignKey, Integer
 from sqlalchemy.orm import relationship
-from backend.app.db.base import Base
+from backend.app.db.base import Base, utc_now
 
 
 class Habit(Base):
@@ -20,8 +20,8 @@ class Habit(Base):
     current_streak = Column(Integer, default=0)
     best_streak = Column(Integer, default=0)
     is_archived = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=utc_now)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
 
     user = relationship("User", back_populates="habits")
     logs = relationship("HabitLog", back_populates="habit", cascade="all, delete-orphan")
@@ -37,6 +37,6 @@ class HabitLog(Base):
     completed = Column(Boolean, default=True)
     count = Column(Integer, default=1)
     notes = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=utc_now)
 
     habit = relationship("Habit", back_populates="logs")

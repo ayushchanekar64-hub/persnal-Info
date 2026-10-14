@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from sqlalchemy import Column, String, Integer, DateTime, Text, ForeignKey
 from sqlalchemy.orm import relationship
-from backend.app.db.base import Base
+from backend.app.db.base import Base, utc_now
 
 
 class CareerProfile(Base):
@@ -17,8 +17,8 @@ class CareerProfile(Base):
     certifications = Column(Text, nullable=True)
     projects = Column(Text, nullable=True)
     experience = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=utc_now)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
 
 
 class JobApplication(Base):
@@ -35,8 +35,8 @@ class JobApplication(Base):
     salary = Column(String(100), nullable=True)
     contact = Column(String(255), nullable=True)
     notes = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=utc_now)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
 
     user = relationship("User", back_populates="job_applications")
     interviews = relationship("Interview", back_populates="job_application", cascade="all, delete-orphan")
@@ -57,6 +57,6 @@ class Interview(Base):
     performance = Column(String(100), nullable=True)
     feedback = Column(Text, nullable=True)
     notes = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=utc_now)
 
     job_application = relationship("JobApplication", back_populates="interviews")

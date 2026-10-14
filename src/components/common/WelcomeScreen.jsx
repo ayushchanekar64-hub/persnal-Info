@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Zap, BarChart3, Brain, Target, ChevronDown } from 'lucide-react';
 import LiveWaveCanvas from './LiveWaveCanvas';
 import '../../styles/welcome.css';
 
@@ -6,117 +7,181 @@ export default function WelcomeScreen({ user, onTransitionStart, onFinish }) {
   const [dissolving, setDissolving] = useState(false);
   const [visible, setVisible] = useState(true);
 
-  useEffect(() => {
-    // 3.0s: Sequence holds, then initiates smooth exit transition into dashboard
-    const dissolveTimer = setTimeout(() => {
-      setDissolving(true);
-      if (onTransitionStart) onTransitionStart();
-    }, 3200);
-
-    // 3.8s: Transition complete, unmount overlay completely
-    const finishTimer = setTimeout(() => {
+  const handleDismiss = () => {
+    if (dissolving) return;
+    setDissolving(true);
+    if (onTransitionStart) onTransitionStart();
+    setTimeout(() => {
       setVisible(false);
       if (onFinish) onFinish();
-    }, 3800);
+    }, 650);
+  };
+
+  useEffect(() => {
+    // 3.6s: Sequences conclude, initiate seamless cinematic dissolve into dashboard
+    const autoTimer = setTimeout(() => {
+      handleDismiss();
+    }, 3600);
+
+    const handleWheel = (e) => {
+      if (Math.abs(e.deltaY) > 15) {
+        handleDismiss();
+      }
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: true });
 
     return () => {
-      clearTimeout(dissolveTimer);
-      clearTimeout(finishTimer);
+      clearTimeout(autoTimer);
+      window.removeEventListener('wheel', handleWheel);
     };
-  }, [onTransitionStart, onFinish]);
+  }, [dissolving]);
 
   if (!visible) return null;
 
-  // Dynamically resolve actual authenticated user's name, fallback to Ayush
-  const rawName = user?.name?.trim() || (user?.email ? user.email.split('@')[0] : null);
-  const displayName = rawName || 'Ayush';
+  // Dynamically resolve actual authenticated user's name
+  const rawName = user?.name?.trim() || user?.full_name?.trim() || (user?.email ? user.email.split('@')[0] : null);
+  const displayName = rawName
+    ? rawName.split(' ')[0].charAt(0).toUpperCase() + rawName.split(' ')[0].slice(1)
+    : 'Ayush';
 
   return (
     <div
       className={`cinematic-welcome-overlay ${dissolving ? 'dissolving' : ''}`}
       aria-hidden={dissolving}
       role="dialog"
-      aria-label="Welcome to MYNEXUS"
+      aria-label="Welcome to MIND OS"
+      onClick={handleDismiss}
     >
-      {/* Real-Time Live Moving Waves & Light Streams Canvas */}
+      {/* 1. SEAMLESS MOVING MATRIX DIGITAL RAIN CANVAS */}
       <LiveWaveCanvas />
 
-      {/* Atmospheric Stardust & Ambient Glow behind Center */}
-      <div className="welcome-bg-canvas">
-        <div className="welcome-stardust" />
-        <div className="welcome-ambient-aura" />
-      </div>
+      {/* 2. SUBTLE REFINED PURPLE AMBIENT BACKLIGHT */}
+      <div className="welcome-hero-ambient-glow" />
 
-      {/* TOP LEFT METADATA */}
-      <div className="corner-metadata top-left-meta">
-        <div className="accent-dash" />
-        <div>YOUR</div>
-        <div>PERSONAL</div>
-        <div>OPERATING</div>
-        <div>SYSTEM</div>
-      </div>
-
-      {/* TOP RIGHT METADATA: IDEAS -> ACTIONS -> PROGRESS */}
-      <div className="corner-metadata top-right-meta">
-        <span>IDEAS</span>
-        <span className="meta-arrow">→</span>
-        <span>ACTIONS</span>
-        <span className="meta-arrow">→</span>
-        <span>PROGRESS</span>
-        <div className="accent-dash" />
-      </div>
-
-      {/* BOTTOM LEFT METADATA: MYNEXUS / EST. 2024 */}
-      <div className="corner-metadata bottom-left-meta">
-        <div>
-          <div style={{ fontWeight: 700, color: '#94A3B8' }}>MYNEXUS</div>
-          <div>EST. 2024</div>
+      {/* TOP LEFT: MIND OS LOGO & WORDMARK */}
+      <header className="welcome-top-left">
+        <div className="welcome-logo-badge">
+          <span className="logo-letter">M</span>
         </div>
-        <div className="accent-dash" />
+        <div className="welcome-top-brand-text">
+          <span className="welcome-brand-name">MIND OS</span>
+          <span className="welcome-brand-tagline">Your Personal Operating System.</span>
+        </div>
+      </header>
+
+      {/* TOP RIGHT: IDEAS -> ACTIONS -> PROGRESS — */}
+      <div className="welcome-top-right">
+        <div className="workflow-steps">
+          <span>IDEAS</span>
+          <span className="step-arrow">→</span>
+          <span>ACTIONS</span>
+          <span className="step-arrow">→</span>
+          <span>PROGRESS</span>
+          <span className="workflow-dash" />
+        </div>
       </div>
 
-      {/* BOTTOM RIGHT METADATA: A Better You. Everyday. */}
-      <div className="corner-metadata bottom-right-meta">
-        <div>A Better You. Everyday.</div>
-        <div className="accent-dash" />
-      </div>
+      {/* RIGHT SIDE VERTICAL STACK: FOCUS, LEARN, BUILD, GROW */}
+      <aside className="welcome-right-vertical">
+        <span>FOCUS</span>
+        <span>LEARN</span>
+        <span>BUILD</span>
+        <span>GROW</span>
+      </aside>
 
       {/* MAIN CENTER HERO */}
-      <div className="cinematic-stage">
-        {/* Glowing Logo in Visual Center */}
-        <div className="cinematic-logo-anchor">
-          <div className="logo-ambient-bloom" />
-          <img
-            src="/logo.svg"
-            alt="MYNEXUS Logo"
-            className="cinematic-logo"
-          />
+      <main className="welcome-center-hero">
+        {/* OVERLINE: — GOOD TO SEE YOU AGAIN — */}
+        <div className="welcome-overline">
+          <span className="overline-dash" />
+          <span className="overline-text">GOOD TO SEE YOU AGAIN</span>
+          <span className="overline-dash" />
         </div>
 
-        {/* MYNEXUS Title */}
-        <h1 className="cinematic-wordmark">MYNEXUS</h1>
+        {/* HERO TITLE: Hello [User] 👋 GUARANTEED ON ONE SINGLE LINE */}
+        <h1 className="welcome-hero-greeting" aria-label={`Hello ${displayName}`}>
+          <span className="greeting-word-hello">Hello</span>
+          <span className="welcome-name-gradient">{displayName}</span>
+          <span className="greeting-wave-emoji" role="img" aria-label="Waving hand">👋</span>
+        </h1>
 
-        {/* Tagline */}
-        <p className="cinematic-tagline">One Place. Everything You.</p>
+        {/* HERO SUBTITLE: Welcome to your Personal OS */}
+        <p className="welcome-hero-subtext">
+          Welcome to your <span className="highlight-personal-os">Personal OS</span>
+        </p>
 
-        {/* Welcome Message: Welcome, Ayush */}
-        <div className="cinematic-welcome-msg">
-          <span>
-            Welcome, <span className="user-name-highlight">{displayName}</span>
-          </span>
+        {/* 4 FEATURE HIGHLIGHTS (SUBTLE & SECONDARY) */}
+        <div className="welcome-pillars-row">
+          {/* Pillar 1: Organize */}
+          <div className="welcome-pillar-item">
+            <Zap className="pillar-icon" size={17} />
+            <div className="pillar-info">
+              <span className="pillar-heading">Organize</span>
+              <span className="pillar-caption">Your Life</span>
+            </div>
+          </div>
+
+          <div className="pillar-v-sep" />
+
+          {/* Pillar 2: Track */}
+          <div className="welcome-pillar-item">
+            <BarChart3 className="pillar-icon" size={17} />
+            <div className="pillar-info">
+              <span className="pillar-heading">Track</span>
+              <span className="pillar-caption">Your Progress</span>
+            </div>
+          </div>
+
+          <div className="pillar-v-sep" />
+
+          {/* Pillar 3: Learn */}
+          <div className="welcome-pillar-item">
+            <Brain className="pillar-icon" size={17} />
+            <div className="pillar-info">
+              <span className="pillar-heading">Learn</span>
+              <span className="pillar-caption">Without Limits</span>
+            </div>
+          </div>
+
+          <div className="pillar-v-sep" />
+
+          {/* Pillar 4: Build */}
+          <div className="welcome-pillar-item">
+            <Target className="pillar-icon" size={17} />
+            <div className="pillar-info">
+              <span className="pillar-heading">Build</span>
+              <span className="pillar-caption">A Better You</span>
+            </div>
+          </div>
         </div>
+      </main>
 
-        {/* FOCUS • LEARN • BUILD • GROW */}
-        <div className="cinematic-focus-tracker">
-          <span>FOCUS</span>
-          <span className="bullet-dot">•</span>
-          <span>LEARN</span>
-          <span className="bullet-dot">•</span>
-          <span>BUILD</span>
-          <span className="bullet-dot">•</span>
-          <span>GROW</span>
+      {/* BOTTOM CENTER: SCROLL TO EXPLORE + MOUSE ICON */}
+      <div className="welcome-scroll-explore">
+        <span className="scroll-text">SCROLL TO EXPLORE</span>
+        <div className="mouse-indicator">
+          <div className="mouse-body">
+            <span className="mouse-wheel-dot" />
+          </div>
+          <ChevronDown className="mouse-arrow" size={14} />
         </div>
       </div>
+
+      {/* BOTTOM LEFT: MIND OS / EST. 2024 — */}
+      <footer className="welcome-bottom-left">
+        <div className="bottom-left-text">
+          <span className="bottom-title">MIND OS</span>
+          <span className="bottom-subtitle">EST. 2024</span>
+        </div>
+        <span className="bottom-dash" />
+      </footer>
+
+      {/* BOTTOM RIGHT: A Better You. Everyday. — */}
+      <aside className="welcome-bottom-right">
+        <span className="bottom-tagline">A Better You. Everyday.</span>
+        <span className="bottom-dash" />
+      </aside>
     </div>
   );
 }

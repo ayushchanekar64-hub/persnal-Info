@@ -14,11 +14,17 @@ from backend.app.api.v1 import (
     notifications,
     search,
     ai,
+    profile,
+    family,
+    inbox,
 )
 
 api_router = APIRouter()
 
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
+api_router.include_router(inbox.router, prefix="/inbox", tags=["inbox"])
+api_router.include_router(profile.router, prefix="/profile", tags=["profile"])
+api_router.include_router(family.router, prefix="/family", tags=["family"])
 api_router.include_router(tasks.router, prefix="/tasks", tags=["tasks"])
 api_router.include_router(goals.router, prefix="/goals", tags=["goals"])
 api_router.include_router(habits.router, prefix="/habits", tags=["habits"])

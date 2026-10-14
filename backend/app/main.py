@@ -7,7 +7,7 @@ from backend.app.api.v1.api import api_router
 import logging
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - [%(levelname)s] - %(name)s - %(message)s")
-logger = logging.getLogger("mynexus.app")
+logger = logging.getLogger("mindos.app")
 
 
 @asynccontextmanager
@@ -31,6 +31,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_origin_regex=r"https?://.*(\.vercel\.app|localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|render\.com)(:\d+)?",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

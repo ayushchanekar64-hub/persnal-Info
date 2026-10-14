@@ -60,7 +60,19 @@ async def global_search(
     )
     career = [{"id": a.id, "title": f"{a.role} @ {a.company}", "status": a.status} for a in career_res.scalars().all()]
 
-    total_matches = len(tasks) + len(goals) + len(notes) + len(learning) + len(coding) + len(career)
+    # Profile Skills & Background
+    from backend.app.models.profile import UserSkill, UserExperience, UserContact
+    skills_res = await db.execute(
+        select(UserSkill).where(UserSkill.user_id == current_user.id, UserSkill.name.ilike(query_str)).limit(5)
+    )
+    profile_skills = [{"id": s.id, "title": f"Skill: {s.name} ({s.proficiency})", "category": s.category} for s in skills_res.scalars().all()]
+
+    exp_res = await db.execute(
+        select(UserExperience).where(UserExperience.user_id == current_user.id, UserExperience.company.ilike(query_str)).limit(5)
+    )
+    profile_exp = [{"id": e.id, "title": f"Experience: {e.role} @ {e.company}", "category": "Experience"} for e in exp_res.scalars().all()]
+
+    total_matches = len(tasks) + len(goals) + len(notes) + len(learning) + len(coding) + len(career) + len(profile_skills) + len(profile_exp)
 
     return {
         "query": q,
@@ -72,5 +84,6 @@ async def global_search(
             "learning": learning,
             "coding": coding,
             "career": career,
+            "profile": profile_skills + profile_exp,
         }
     }

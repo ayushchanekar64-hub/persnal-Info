@@ -45,15 +45,60 @@ async def query_copilot(
     coding_res = await db.execute(select(CodingProblem).where(CodingProblem.user_id == current_user.id))
     coding_problems = coding_res.scalars().all()
 
+    from backend.app.models.profile import UserProfile, UserSkill, UserExperience, UserEducation
+    profile_res = await db.execute(select(UserProfile).where(UserProfile.user_id == current_user.id))
+    profile = profile_res.scalars().first()
+
+    skill_res = await db.execute(select(UserSkill).where(UserSkill.user_id == current_user.id))
+    skills = skill_res.scalars().all()
+
+    exp_res = await db.execute(select(UserExperience).where(UserExperience.user_id == current_user.id))
+    experiences = exp_res.scalars().all()
+
+    edu_res = await db.execute(select(UserEducation).where(UserEducation.user_id == current_user.id))
+    educations = edu_res.scalars().all()
+
     # If user has no data yet
-    if not pending_tasks and not goals and not learning_items and not coding_problems:
+    if not pending_tasks and not goals and not learning_items and not coding_problems and not profile and not skills:
         return AIResponse(
-            reply="Your AI insights will appear here once MYNEXUS has enough activity to analyze.",
+            reply="Your AI insights will appear here once MIND OS has enough activity to analyze.",
             context_used={"has_data": False}
         )
 
     # Dynamic context synthesis based on real user records
     reply_lines = []
+    if "profile" in q or "who am i" in q or "about me" in q or "bio" in q:
+        user_name = profile.full_name if profile and profile.full_name else (current_user.name or "User")
+        role = profile.bio or (experiences[0].role if experiences else "Builder")
+        reply_lines.append(f"Profile Summary: {user_name} — {role}. Registered email: {current_user.email}.")
+        if skills:
+            top_skills = ", ".join([s.name for s in skills[:5]])
+            reply_lines.append(f"Top registered skills: {top_skills}.")
+
+    if "skill" in q or "expertise" in q or "tech stack" in q:
+        if skills:
+            skills_by_prof = {}
+            for s in skills:
+                skills_by_prof.setdefault(s.proficiency, []).append(s.name)
+            summary_parts = [f"{k}: {', '.join(v)}" for k, v in skills_by_prof.items()]
+            reply_lines.append(f"Your Registered Skill Inventory:\n" + "\n".join(f"• {part}" for part in summary_parts))
+        else:
+            reply_lines.append("No skills registered in your Profile Database yet. Head over to My Profile to register your technical and professional skills.")
+
+    if "experience" in q or "career" in q or "job" in q:
+        if experiences:
+            exp_list = [f"• {e.role} at {e.company} ({e.start_date or 'Recent'} - {e.end_date or 'Present'})" for e in experiences]
+            reply_lines.append(f"Work Experience History:\n" + "\n".join(exp_list))
+        else:
+            reply_lines.append("No career experiences registered yet in your Personal Database.")
+
+    if "education" in q or "degree" in q or "college" in q or "university" in q:
+        if educations:
+            edu_list = [f"• {e.degree} in {e.field_of_study or 'Major'} from {e.institution}" for e in educations]
+            reply_lines.append(f"Academic Background:\n" + "\n".join(edu_list))
+        else:
+            reply_lines.append("No education records logged yet in your Personal Database.")
+
     if "focus" in q or "today" in q or "task" in q:
         if pending_tasks:
             high_pri = [t for t in pending_tasks if t.priority in ["Critical", "High"]]
@@ -85,8 +130,9 @@ async def query_copilot(
             reply_lines.append("No coding problems solved yet. Log your first problem in Coding to track patterns and mistakes.")
 
     if not reply_lines:
+        profile_part = f"Profile registered for {profile.full_name or current_user.name}" if profile else "Profile database ready"
         reply_lines.append(
-            f"Here is your real-time summary: {len(pending_tasks)} pending tasks, {len(goals)} active goals, and {len(learning_items)} learning tracks active."
+            f"Here is your real-time summary: {len(pending_tasks)} pending tasks, {len(goals)} active goals, {len(learning_items)} learning tracks, and {len(skills)} registered skills ({profile_part})."
         )
 
     return AIResponse(
@@ -96,6 +142,8 @@ async def query_copilot(
             "goals_count": len(goals),
             "learning_count": len(learning_items),
             "coding_count": len(coding_problems),
+            "skills_count": len(skills),
+            "experiences_count": len(experiences),
         }
     )
 

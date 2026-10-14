@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from sqlalchemy import Column, String, Integer, Float, DateTime, Text, ForeignKey
 from sqlalchemy.orm import relationship
-from backend.app.db.base import Base
+from backend.app.db.base import Base, utc_now
 
 
 class LearningItem(Base):
@@ -28,8 +28,8 @@ class LearningItem(Base):
     total_hours = Column(Float, default=0.0)
     last_revised = Column(String(50), nullable=True)
     next_revision = Column(String(50), nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=utc_now)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
 
     user = relationship("User", back_populates="learning_items")
     sessions = relationship("LearningSession", back_populates="learning_item", cascade="all, delete-orphan")
@@ -44,6 +44,6 @@ class LearningSession(Base):
     hours = Column(Float, nullable=False, default=1.0)
     date = Column(String(50), nullable=False)
     notes = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=utc_now)
 
     learning_item = relationship("LearningItem", back_populates="sessions")

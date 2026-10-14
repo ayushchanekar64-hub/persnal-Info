@@ -1,0 +1,462 @@
+/* ===================================================
+   GOOGLE AUTHENTICATION MODAL & ACCOUNT CHOOSER
+   Matches Official Google Identity Services + AYORA Dark Polish
+=================================================== */
+
+.google-modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 999999 !important;
+  background: rgba(0, 0, 0, 0.75) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 1.25rem !important;
+  box-sizing: border-box !important;
+  animation: googleFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes googleFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.google-auth-dialog {
+  width: 100% !important;
+  max-width: 440px !important;
+  background: #18191E !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.06) !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  color: #F3F4F6 !important;
+  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif) !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+}
+
+.google-dialog-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 1.4rem 1.6rem 1.2rem !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.015) !important;
+}
+
+.google-dialog-brand {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.9rem !important;
+}
+
+.google-brand-titles {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.15rem !important;
+}
+
+.google-dialog-heading {
+  font-size: 1.12rem !important;
+  font-weight: 700 !important;
+  color: #FFFFFF !important;
+  margin: 0 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.google-dialog-subheading {
+  font-size: 0.83rem !important;
+  color: #9CA3AF !important;
+  margin: 0 !important;
+}
+
+.google-dialog-subheading strong {
+  color: #E5E7EB !important;
+}
+
+.google-dialog-close-btn {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #9CA3AF !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  flex-shrink: 0 !important;
+}
+
+.google-dialog-close-btn:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #FFFFFF !important;
+}
+
+.google-error-banner {
+  margin: 1rem 1.4rem 0 !important;
+  padding: 0.7rem 0.9rem !important;
+  background: rgba(239, 68, 68, 0.12) !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  border-radius: 10px !important;
+  color: #FCA5A5 !important;
+  font-size: 0.83rem !important;
+}
+
+.google-account-list-container {
+  padding: 1.2rem 1.4rem 1.4rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1rem !important;
+}
+
+.google-accounts-scroll {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.55rem !important;
+  max-height: 320px !important;
+  overflow-y: auto !important;
+}
+
+.google-account-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.85rem !important;
+  padding: 0.85rem 1rem !important;
+  background: rgba(255, 255, 255, 0.035) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 13px !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  position: relative !important;
+  user-select: none !important;
+  box-sizing: border-box !important;
+}
+
+.google-account-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  transform: translateY(-1px) !important;
+}
+
+.google-account-avatar {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  color: #FFFFFF !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35) !important;
+}
+
+.google-another-avatar {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px dashed rgba(255, 255, 255, 0.25) !important;
+  color: #9CA3AF !important;
+}
+
+.google-account-details {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.15rem !important;
+  overflow: hidden !important;
+}
+
+.google-account-name-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+.google-account-name {
+  font-size: 0.92rem !important;
+  font-weight: 600 !important;
+  color: #FFFFFF !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.google-account-badge {
+  font-size: 0.65rem !important;
+  font-weight: 600 !important;
+  padding: 0.12rem 0.45rem !important;
+  background: rgba(34, 197, 94, 0.14) !important;
+  color: #4ADE80 !important;
+  border: 1px solid rgba(34, 197, 94, 0.3) !important;
+  border-radius: 9999px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.03em !important;
+}
+
+.google-account-email {
+  font-size: 0.8rem !important;
+  color: #9CA3AF !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.google-account-remove-btn {
+  opacity: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  color: #6B7280 !important;
+  padding: 0.35rem !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+}
+
+.google-account-item:hover .google-account-remove-btn {
+  opacity: 0.75 !important;
+}
+
+.google-account-remove-btn:hover {
+  opacity: 1 !important;
+  color: #EF4444 !important;
+  background: rgba(239, 68, 68, 0.12) !important;
+}
+
+.google-arrow-icon {
+  color: #6B7280 !important;
+  transition: transform 0.2s ease, color 0.2s ease !important;
+}
+
+.google-account-item:hover .google-arrow-icon {
+  color: #9CA3AF !important;
+  transform: translateX(3px) !important;
+}
+
+.google-dialog-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.07) !important;
+  padding-top: 0.85rem !important;
+}
+
+.google-footer-text {
+  font-size: 0.72rem !important;
+  color: #6B7280 !important;
+  line-height: 1.45 !important;
+  margin: 0 !important;
+}
+
+.google-footer-link {
+  color: #60A5FA !important;
+  text-decoration: none !important;
+}
+
+.google-footer-link:hover {
+  text-decoration: underline !important;
+}
+
+/* Authenticating Loading State */
+.google-auth-loading-screen {
+  padding: 2.25rem 1.6rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  gap: 1.15rem !important;
+}
+
+.google-loading-spinner-box {
+  width: 60px !important;
+  height: 60px !important;
+  border-radius: 50% !important;
+  background: rgba(66, 133, 244, 0.1) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid rgba(66, 133, 244, 0.25) !important;
+}
+
+.google-loading-spin {
+  color: #4285F4 !important;
+  animation: spin 1s linear infinite !important;
+}
+
+.google-loading-title {
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  color: #FFFFFF !important;
+  margin: 0 !important;
+}
+
+.google-authenticating-chip {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 0.55rem 0.9rem !important;
+  border-radius: 12px !important;
+}
+
+.google-chip-avatar {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  font-size: 0.8rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.google-chip-info {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  text-align: left !important;
+}
+
+.google-chip-name {
+  font-size: 0.84rem !important;
+  font-weight: 600 !important;
+  color: #FFFFFF !important;
+}
+
+.google-chip-email {
+  font-size: 0.74rem !important;
+  color: #9CA3AF !important;
+}
+
+.google-loading-notice {
+  font-size: 0.76rem !important;
+  color: #9CA3AF !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.4rem !important;
+  margin-top: 0.4rem !important;
+}
+
+.google-shield-icon {
+  color: #34A853 !important;
+}
+
+/* Add / Custom Account Form */
+.google-add-account-form {
+  padding: 1.4rem 1.6rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1.15rem !important;
+}
+
+.google-form-header {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.25rem !important;
+}
+
+.google-form-title {
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  color: #FFFFFF !important;
+  margin: 0 !important;
+}
+
+.google-form-desc {
+  font-size: 0.8rem !important;
+  color: #9CA3AF !important;
+  margin: 0 !important;
+}
+
+.google-input-group {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.35rem !important;
+}
+
+.google-input-label {
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  color: #D1D5DB !important;
+}
+
+.google-input-field {
+  width: 100% !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 10px !important;
+  padding: 0.7rem 0.85rem !important;
+  color: #FFFFFF !important;
+  font-size: 0.88rem !important;
+  font-family: inherit !important;
+  outline: none !important;
+  transition: border-color 0.2s !important;
+  box-sizing: border-box !important;
+}
+
+.google-input-field:focus {
+  border-color: #4285F4 !important;
+  box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2) !important;
+}
+
+.google-form-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-top: 0.4rem !important;
+  gap: 0.75rem !important;
+}
+
+.google-btn-secondary {
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #D1D5DB !important;
+  font-size: 0.83rem !important;
+  font-weight: 600 !important;
+  padding: 0.6rem 0.95rem !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+}
+
+.google-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #FFFFFF !important;
+}
+
+.google-btn-primary {
+  background: #4285F4 !important;
+  border: none !important;
+  color: #FFFFFF !important;
+  font-size: 0.83rem !important;
+  font-weight: 600 !important;
+  padding: 0.6rem 1.2rem !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  transition: background 0.2s, transform 0.1s !important;
+}
+
+.google-btn-primary:hover:not(:disabled) {
+  background: #3367D6 !important;
+}
+
+.google-btn-primary:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}

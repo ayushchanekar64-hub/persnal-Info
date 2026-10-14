@@ -8,23 +8,46 @@ import {
   LogIn,
   CheckCircle2,
   Target,
-  FileText
+  FileText,
+  Sparkles,
+  HelpCircle,
+  ChevronDown,
+  Menu,
+  Inbox
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 
 export default function Header({
+  activeTab = 'dashboard',
+  setActiveTab,
   theme,
   setTheme,
   searchQuery,
   setSearchQuery,
-  onOpenQuickAction
+  onOpenQuickAction,
+  onToggleMobileMenu,
+  onOpenHUD,
+  onOpenTriage
 }) {
-  const { user, setAuthModalOpen } = useAuth();
+  const { user, setAuthModalOpen, openAuth } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showSearchModal, setShowSearchModal] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [searchResults, setSearchResults] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
+
+  const navLinks = [
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'tasks', label: 'Tasks' },
+    { id: 'goals', label: 'Goals' },
+    { id: 'habits', label: 'Habits' },
+    { id: 'learning', label: 'Learning' },
+    { id: 'coding', label: 'Coding' },
+    { id: 'career', label: 'Career' },
+    { id: 'finance', label: 'Finance' },
+    { id: 'analytics', label: 'Analytics' }
+  ];
 
   // Fetch real notifications when authenticated
   useEffect(() => {
@@ -63,34 +86,41 @@ export default function Header({
 
   return (
     <header className="top-header">
-      {/* Dynamic Header Left */}
-      <div className="header-left">
-        <div className="header-greeting">
-          <h1 className="header-greeting-title">
-            {user?.name ? (
-              <>Good morning, {user.name} <span>👋</span></>
-            ) : (
-              <>Welcome to MYNEXUS <span>✨</span></>
-            )}
-          </h1>
-          <span className="header-greeting-subtitle">
-            {user
-              ? "Here's what's happening with your life and goals today."
-              : "Sign in to access your private, isolated personal productivity workspace."}
-          </span>
-        </div>
+      {/* Left: Hamburger menu on mobile + Workspace context */}
+      <div className="header-left-context">
+        <button
+          type="button"
+          className="mobile-menu-btn"
+          onClick={onToggleMobileMenu}
+          title="Open Navigation"
+          aria-label="Open Navigation"
+        >
+          <Menu size={20} />
+        </button>
+        <span className="workspace-tag">Personal Workspace</span>
       </div>
 
-      {/* Header Right */}
-      <div className="header-right">
-        {/* Global Search Bar */}
-        <div className="search-container" style={{ position: 'relative' }}>
+      {/* Right: Search, Notifs, Theme, User Avatar & AI Assistant Button */}
+      <div className="header-right-actions">
+        {/* Compact Search Trigger for Mobile */}
+        <button
+          type="button"
+          className="header-action-icon mobile-search-trigger"
+          onClick={() => setShowSearchModal(true)}
+          title="Search anything"
+          aria-label="Search anything"
+        >
+          <Search size={16} />
+        </button>
+
+        {/* Global Search Bar (Desktop) */}
+        <div className="search-container desktop-search-container">
           <div className="search-input-wrapper">
-            <Search className="search-icon" />
+            <Search className="search-icon" size={15} />
             <input
               type="text"
               className="search-input"
-              placeholder="Search tasks, goals, notes..."
+              placeholder="Search anything..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -100,7 +130,7 @@ export default function Header({
                 style={{ padding: 2, marginRight: 4 }}
                 onClick={() => setSearchQuery('')}
               >
-                <X size={14} />
+                <X size={13} />
               </button>
             ) : (
               <span className="search-kbd">⌘K</span>
@@ -110,7 +140,7 @@ export default function Header({
           {/* Search Results Dropdown */}
           {searchResults && searchResults.total > 0 && (
             <div
-              className="nexus-card"
+              className="nexus-card animate-pop-in popover-menu"
               style={{
                 position: 'absolute',
                 top: 'calc(100% + 8px)',
@@ -153,31 +183,32 @@ export default function Header({
           )}
         </div>
 
-        {/* Theme Toggle (Light / Dark) */}
+        {/* Frictionless Inbox Instant Capture HUD Trigger */}
         <button
-          className="btn-icon"
-          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
-          aria-label="Toggle Theme"
+          type="button"
+          className="btn-icon header-action-icon"
+          onClick={onOpenHUD}
+          title="Frictionless Inbox — Dump Idea (Alt + C)"
+          style={{ position: 'relative', color: '#A78BFA' }}
         >
-          {theme === 'dark' ? <Sun size={18} color="#FBBF24" /> : <Moon size={18} />}
+          <Inbox size={17} />
         </button>
 
         {/* Notifications Icon with Popover */}
         <div style={{ position: 'relative' }}>
           <button
-            className="btn-icon"
+            className="btn-icon header-action-icon"
             onClick={() => setShowNotifications(!showNotifications)}
             title="Notifications"
             style={{ position: 'relative' }}
           >
-            <Bell size={18} />
+            <Bell size={17} />
             {unreadCount > 0 && <span className="notif-badge-indicator" />}
           </button>
 
           {showNotifications && (
             <div
-              className="nexus-card"
+              className="nexus-card animate-pop-in popover-menu"
               style={{
                 position: 'absolute',
                 right: 0,
@@ -234,33 +265,116 @@ export default function Header({
           )}
         </div>
 
-        {/* User Auth or Quick Action */}
-        {!user ? (
-          <button
-            className="btn btn-secondary btn-sm"
-            onClick={() => setAuthModalOpen(true)}
-            style={{ gap: '0.35rem' }}
-          >
-            <LogIn size={15} /> Sign In
-          </button>
-        ) : null}
-
-        {/* Quick Add Button */}
+        {/* Theme Toggle */}
         <button
-          className="btn btn-primary btn-sm"
+          className="btn-icon header-action-icon"
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          aria-label="Toggle Theme"
+        >
+          {theme === 'dark' ? <Sun size={17} color="#FBBF24" /> : <Moon size={17} />}
+        </button>
+
+        {/* User Profile Chip (Reference Style) */}
+        {user ? (
+          <div
+            className="header-user-profile-chip"
+            onClick={() => setActiveTab && setActiveTab('profile')}
+            title="View & Edit My Profile"
+          >
+            <div className="header-user-avatar">
+              {(() => {
+                const isImage = (val) =>
+                  typeof val === 'string' &&
+                  (val.startsWith('http://') ||
+                    val.startsWith('https://') ||
+                    val.startsWith('data:image/') ||
+                    val.startsWith('blob:') ||
+                    val.startsWith('/assets') ||
+                    val.includes('.png') ||
+                    val.includes('.jpg') ||
+                    val.includes('.jpeg') ||
+                    val.includes('.webp'));
+
+                const avatarSrc = isImage(user.profile_photo)
+                  ? user.profile_photo
+                  : isImage(user.avatar)
+                  ? user.avatar
+                  : null;
+
+                const initial = (user.name || user.email || 'A').trim().charAt(0).toUpperCase();
+
+                if (avatarSrc) {
+                  return (
+                    <>
+                      <img
+                        src={avatarSrc}
+                        alt={user.name || 'User'}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.parentElement?.querySelector('.avatar-fallback-initial');
+                          if (fallback) fallback.style.display = 'flex';
+                        }}
+                      />
+                      <span className="avatar-fallback-initial" style={{ display: 'none' }}>
+                        {initial}
+                      </span>
+                    </>
+                  );
+                }
+
+                return <span>{initial}</span>;
+              })()}
+            </div>
+            <div className="header-user-details">
+              <span className="header-user-name">{user.name || user.email.split('@')[0]}</span>
+              <span className="header-user-role">{user.role || 'Member'}</span>
+            </div>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+            <button
+              className="btn btn-secondary btn-sm"
+              onClick={() => (openAuth ? openAuth('signin') : setAuthModalOpen(true))}
+              style={{ gap: '0.35rem', fontWeight: 500 }}
+              title="Sign In to MIND OS"
+            >
+              <LogIn size={14} /> Sign In
+            </button>
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={() => (openAuth ? openAuth('signup') : setAuthModalOpen(true))}
+              style={{
+                gap: '0.35rem',
+                background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
+                borderColor: '#8B5CF6',
+                color: '#FFFFFF',
+                fontWeight: 600,
+                boxShadow: '0 2px 8px rgba(124, 58, 237, 0.3)'
+              }}
+              title="Create a MIND OS Account"
+            >
+              <Sparkles size={13} /> Sign Up
+            </button>
+          </div>
+        )}
+
+        {/* Glowing Gradient AI Assistant / Quick Action Button (Reference Match) */}
+        <button
+          className="btn-ai-assistant-pill"
           onClick={() => {
-            if (!user) {
-              setAuthModalOpen(true);
-            } else {
+            if (activeTab === 'ai-assistant') {
               onOpenQuickAction('task');
+            } else if (setActiveTab) {
+              setActiveTab('ai-assistant');
             }
           }}
-          style={{ gap: '0.35rem' }}
         >
-          <span>+</span> Quick Action
+          <Sparkles size={14} className="sparkle-icon" />
+          <span>AI Assistant</span>
         </button>
       </div>
     </header>
   );
 }
-

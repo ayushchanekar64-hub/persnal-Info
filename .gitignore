@@ -58,3 +58,4 @@ wheels/
 *.db
 backend/app/db/*.sqlite3
 backend/app/db/*.db
+backend/uvicorn_output.txt

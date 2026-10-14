@@ -18,7 +18,7 @@ export default function GoalProgress({ goals = [], onOpenQuickAction }) {
   };
 
   return (
-    <div className="nexus-card">
+    <div className="nexus-card motion-card animate-fade-in-up stagger-3">
       <div className="nexus-card-header">
         <div className="nexus-card-title-group">
           <div className="stat-icon-wrapper" style={{ background: 'var(--accent-50)', color: 'var(--accent-600)' }}>
@@ -33,9 +33,10 @@ export default function GoalProgress({ goals = [], onOpenQuickAction }) {
         </div>
 
         <button
-          className="btn btn-secondary btn-sm"
+          className="btn btn-primary btn-sm"
           onClick={() => onOpenQuickAction('goal')}
           title="Add new goal"
+          style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem' }}
         >
           <Plus size={14} />
           <span>New Goal</span>
@@ -44,9 +45,15 @@ export default function GoalProgress({ goals = [], onOpenQuickAction }) {
 
       {goals.length === 0 ? (
         <EmptyState
+          icon={Target}
           title="No goals yet"
           description="Define objectives and milestones to track your progress."
           actionLabel="+ New Goal"
+          presets={[
+            { label: 'Master System Design' },
+            { label: 'Solve 100 DSA Problems' },
+            { label: 'Build Production AI App' }
+          ]}
           onAction={() => onOpenQuickAction('goal')}
         />
       ) : (

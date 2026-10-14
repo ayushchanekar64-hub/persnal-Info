@@ -1,171 +1,181 @@
-/* ===================================================
-   MYNEXUS CINEMATIC LIVE-WAVE WELCOME SCREEN
-   Exact Reference Replica with Real-Time Moving Waves
-=================================================== */
+/* ==========================================================================
+   MIND OS — WELCOME SCREEN (PREMIUM APPLE/GOOGLE-LEVEL POLISH)
+   - Completely dark, minimal aesthetic
+   - "Hello [User] 👋" guaranteed on ONE single line
+   - Premium modern typography, subtle glow & smooth blur-to-sharp reveal
+   - Subtle animated digital depth that never overpowers the text
+   - 4 secondary feature highlights
+   - Seamless fade/zoom transition into Dashboard (60fps, no flicker)
+   ========================================================================== */
 
+/* Fullscreen Immersion Overlay */
 .cinematic-welcome-overlay {
   position: fixed;
   inset: 0;
   width: 100vw;
   height: 100vh;
+  z-index: 99999;
   background-color: #000000;
-  z-index: 99999999;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   user-select: none;
+  cursor: pointer;
   opacity: 1;
-  pointer-events: auto;
-  transition: opacity 0.65s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: opacity;
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.65s ease-out;
+  will-change: opacity, transform, filter;
 }
 
+/* Seamless Cinematic Dissolve into Dashboard (No Flash, No Sudden Cut) */
 .cinematic-welcome-overlay.dissolving {
   opacity: 0;
+  transform: scale(1.03);
+  filter: blur(6px);
   pointer-events: none;
 }
 
-/* Background Atmosphere Layers */
-.welcome-bg-canvas {
+/* Subtle Refined Purple Backlight (Never Overpowers or Clouds the Text) */
+.welcome-hero-ambient-glow {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-/* Deep Ambient Purple / Blue Glow behind Center Logo */
-.welcome-ambient-aura {
-  position: absolute;
-  top: 36%;
+  top: 48%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 700px;
-  height: 700px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(124, 58, 237, 0.32) 0%, rgba(139, 92, 246, 0.14) 35%, transparent 68%);
-  filter: blur(25px);
+  width: 520px;
+  height: 240px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(147, 51, 234, 0.12) 0%,
+    rgba(99, 102, 241, 0.04) 50%,
+    transparent 72%
+  );
   pointer-events: none;
-  animation: auraPulse 4s ease-in-out infinite alternate;
+  z-index: 2;
+  filter: blur(40px);
 }
 
-@keyframes auraPulse {
-  0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.8; }
-  100% { transform: translate(-50%, -50%) scale(1.12); opacity: 1; }
-}
+/* ==========================================================================
+   TOP-LEFT BRANDING: [M] BADGE + MIND OS
+   ========================================================================== */
 
-/* Star dust celestial points */
-.welcome-stardust {
+.welcome-top-left {
   position: absolute;
-  inset: 0;
-  background-image: 
-    radial-gradient(1.5px 1.5px at 18% 22%, rgba(255, 255, 255, 0.65) 50%, transparent),
-    radial-gradient(1.5px 1.5px at 80% 28%, rgba(196, 181, 253, 0.7) 50%, transparent),
-    radial-gradient(1px 1px at 32% 60%, rgba(255, 255, 255, 0.45) 50%, transparent),
-    radial-gradient(1.5px 1.5px at 68% 68%, rgba(167, 139, 250, 0.55) 50%, transparent),
-    radial-gradient(1.2px 1.2px at 88% 52%, rgba(56, 189, 248, 0.6) 50%, transparent),
-    radial-gradient(1px 1px at 12% 72%, rgba(167, 139, 250, 0.5) 50%, transparent);
-  pointer-events: none;
-}
-
-/* ===================================================
-   CORNER METADATA
-=================================================== */
-.corner-metadata {
-  position: absolute;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  color: #64748B;
-  font-size: 0.68rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  font-weight: 600;
-  line-height: 1.6;
-  pointer-events: none;
-  z-index: 10;
-  opacity: 0.78;
-}
-
-.top-left-meta {
-  top: 3.25rem;
-  left: 3.5rem;
-  text-align: left;
-}
-
-.top-left-meta .accent-dash {
-  width: 28px;
-  height: 1.5px;
-  background: rgba(148, 163, 184, 0.5);
-  margin-bottom: 0.85rem;
-}
-
-.top-right-meta {
-  top: 3.25rem;
-  right: 3.5rem;
-  text-align: right;
+  top: 2.25rem;
+  left: 2.75rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  letter-spacing: 0.22em;
-  color: #7C8BA1;
+  gap: 0.85rem;
+  z-index: 10;
+  pointer-events: none;
+  animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
 }
 
-.top-right-meta .meta-arrow {
-  color: #8B5CF6;
+.welcome-logo-badge {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #1f083a 0%, #0d031a 100%);
+  border: 1.5px solid rgba(168, 85, 247, 0.7);
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.4), inset 0 0 8px rgba(168, 85, 247, 0.2);
+}
+
+.logo-letter {
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1;
+}
+
+.welcome-top-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.welcome-brand-name {
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #FFFFFF;
+  line-height: 1.1;
+}
+
+.welcome-brand-tagline {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.7rem;
+  color: #94A3B8;
+  letter-spacing: 0.02em;
+}
+
+/* ==========================================================================
+   TOP-RIGHT WORKFLOW & RIGHT VERTICAL STACK
+   ========================================================================== */
+
+.welcome-top-right {
+  position: absolute;
+  top: 2.5rem;
+  right: 2.75rem;
+  z-index: 10;
+  pointer-events: none;
+  animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+
+.workflow-steps {
+  display: flex;
+  align-items: center;
+  gap: 0.95rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  font-weight: 600;
+  color: #94A3B8;
+}
+
+.step-arrow {
+  color: #475569;
   font-size: 0.8rem;
 }
 
-.top-right-meta .accent-dash {
+.workflow-dash {
+  display: inline-block;
   width: 28px;
-  height: 1.5px;
-  background: rgba(148, 163, 184, 0.5);
-  margin-left: 0.5rem;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.3);
+  margin-left: 0.4rem;
 }
 
-.bottom-left-meta {
-  bottom: 2.75rem;
-  left: 3.5rem;
-  text-align: left;
-  line-height: 1.5;
+/* Right Side Vertical Stack: FOCUS, LEARN, BUILD, GROW */
+.welcome-right-vertical {
+  position: absolute;
+  top: 6.25rem;
+  right: 2.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  font-weight: 600;
   color: #64748B;
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-}
-
-.bottom-left-meta .accent-dash {
-  width: 28px;
-  height: 1.5px;
-  background: rgba(148, 163, 184, 0.5);
-}
-
-.bottom-right-meta {
-  bottom: 2.75rem;
-  right: 3.5rem;
   text-align: right;
-  letter-spacing: 0.18em;
-  color: #64748B;
-  font-size: 0.68rem;
-  text-transform: none;
-  font-style: italic;
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
+  z-index: 10;
+  pointer-events: none;
+  animation: fadeInRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
 }
 
-.bottom-right-meta .accent-dash {
-  width: 28px;
-  height: 1.5px;
-  background: rgba(148, 163, 184, 0.5);
-}
+/* ==========================================================================
+   MAIN CENTER HERO
+   ========================================================================== */
 
-/* ===================================================
-   MAIN CENTER HERO CONTENT
-=================================================== */
-.cinematic-stage {
+.welcome-center-hero {
   position: relative;
   z-index: 10;
   display: flex;
@@ -174,238 +184,443 @@
   justify-content: center;
   text-align: center;
   padding: 1.5rem;
-  max-width: 950px;
+  max-width: 1100px;
   width: 100%;
-  margin-top: -2.5rem;
-  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), filter 0.65s ease-out;
-  will-change: transform, filter;
 }
 
-.cinematic-welcome-overlay.dissolving .cinematic-stage {
-  transform: scale(1.025);
-  filter: blur(4px);
+/* Overline: — GOOD TO SEE YOU AGAIN — */
+.welcome-overline {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  margin-bottom: 1.3rem;
+  animation: overlineFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
 }
 
-/* Logo Hero */
-.cinematic-logo-anchor {
-  position: relative;
+@keyframes overlineFade {
+  0% { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.overline-dash {
+  width: 28px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.overline-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  color: #94A3B8;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   GREETING: "Hello [User] 👋" ON ONE SINGLE LINE
+   ========================================================================== */
+
+.welcome-hero-greeting {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: clamp(2.4rem, 5.6vw, 4.6rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+  margin: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 2.2rem;
+  gap: 0.65rem;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  text-align: center;
+  max-width: 100%;
 }
 
-.cinematic-logo-anchor .logo-ambient-bloom {
-  position: absolute;
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(167, 139, 250, 0.55) 0%, rgba(124, 58, 237, 0.25) 50%, transparent 75%);
-  filter: blur(18px);
-  pointer-events: none;
-  animation: bloomPulse 3.5s ease-in-out infinite alternate;
-}
-
-@keyframes bloomPulse {
-  0% { transform: scale(0.92); opacity: 0.8; }
-  100% { transform: scale(1.15); opacity: 1; }
-}
-
-.cinematic-logo {
-  width: 115px;
-  height: 115px;
-  border-radius: 32px;
-  position: relative;
-  z-index: 2;
-  filter: drop-shadow(0 0 35px rgba(139, 92, 246, 0.8)) drop-shadow(0 0 90px rgba(124, 58, 237, 0.5));
-  animation: logoEntrance 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+/* 1. "Hello" in Soft White / Silver with Smooth Blur-to-Sharp Upward Reveal */
+.greeting-word-hello {
+  color: #F1F5F9;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.85);
+  display: inline-block;
   opacity: 0;
-  transform: scale(0.82);
+  transform: translateY(12px);
+  filter: blur(8px);
+  animation: helloEntrance 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
 }
 
-@keyframes logoEntrance {
+@keyframes helloEntrance {
   0% {
     opacity: 0;
-    transform: scale(0.82);
-    filter: blur(14px) drop-shadow(0 0 0 rgba(139, 92, 246, 0));
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-    filter: blur(0px) drop-shadow(0 0 35px rgba(139, 92, 246, 0.8)) drop-shadow(0 0 90px rgba(124, 58, 237, 0.5));
-  }
-}
-
-/* MYNEXUS Title */
-.cinematic-wordmark {
-  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-  font-size: 4.5rem;
-  font-weight: 800;
-  letter-spacing: -0.015em;
-  line-height: 1.02;
-  color: #FFFFFF;
-  margin-bottom: 0.65rem;
-  animation: titleEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.35s forwards;
-  opacity: 0;
-  transform: translateY(18px);
-  text-shadow: 0 4px 35px rgba(255, 255, 255, 0.18), 0 0 50px rgba(139, 92, 246, 0.25);
-}
-
-@keyframes titleEntrance {
-  0% {
-    opacity: 0;
-    transform: translateY(18px);
-    filter: blur(10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0px);
-  }
-}
-
-/* Tagline: One Place. Everything You. */
-.cinematic-tagline {
-  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-  font-size: 2.35rem;
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  line-height: 1.25;
-  background: linear-gradient(180deg, #FFFFFF 30%, #D8B4FE 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 2.25rem;
-  animation: taglineEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;
-  opacity: 0;
-  transform: translateY(14px);
-}
-
-@keyframes taglineEntrance {
-  0% {
-    opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(12px);
     filter: blur(8px);
   }
   100% {
     opacity: 1;
     transform: translateY(0);
-    filter: blur(0px);
+    filter: blur(0);
   }
 }
 
-/* Welcome Message */
-.cinematic-welcome-msg {
-  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-  font-size: 1.15rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  color: #E2E8F0;
-  margin-bottom: 1.25rem;
-  animation: welcomeEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.85s forwards;
+/* 2. User Name in Elegant Purple → Indigo Gradient with Subtle Refined Glow */
+.welcome-name-gradient {
+  display: inline-block;
+  background: linear-gradient(135deg, #E9D5FF 0%, #C084FC 32%, #A855F7 68%, #818CF8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 18px rgba(168, 85, 247, 0.42));
   opacity: 0;
   transform: translateY(10px);
+  filter: blur(10px);
+  animation: nameEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
 }
 
-@keyframes welcomeEntrance {
+@keyframes nameEntrance {
   0% {
     opacity: 0;
     transform: translateY(10px);
+    filter: blur(10px) drop-shadow(0 0 0 rgba(168, 85, 247, 0));
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px) drop-shadow(0 0 18px rgba(168, 85, 247, 0.42));
+  }
+}
+
+/* 3. Hand Emoji: Natural Appearance with Tiny Smooth Scale/Fade Motion & Waving */
+.greeting-wave-emoji {
+  display: inline-block;
+  font-size: 0.92em;
+  margin-left: 0.15rem;
+  opacity: 0;
+  transform-origin: 70% 70%;
+  animation: 
+    emojiEntrance 0.48s cubic-bezier(0.2, 0.8, 0.2, 1) 0.62s both,
+    waveHand 2.5s infinite 1.2s;
+}
+
+@keyframes emojiEntrance {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes waveHand {
+  0% { transform: rotate(0.0deg); }
+  10% { transform: rotate(14.0deg); }
+  20% { transform: rotate(-8.0deg); }
+  30% { transform: rotate(14.0deg); }
+  40% { transform: rotate(-4.0deg); }
+  50% { transform: rotate(10.0deg); }
+  60% { transform: rotate(0.0deg); }
+  100% { transform: rotate(0.0deg); }
+}
+
+/* 4. Subtitle: "Welcome to your Personal OS" */
+.welcome-hero-subtext {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(1.15rem, 2.2vw, 1.55rem);
+  font-weight: 500;
+  color: #E2E8F0;
+  margin-top: 1.05rem;
+  margin-bottom: 0;
+  letter-spacing: -0.015em;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);
+  opacity: 0;
+  transform: translateY(8px);
+  filter: blur(6px);
+  animation: subtitleEntrance 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.85s both;
+}
+
+@keyframes subtitleEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
     filter: blur(6px);
   }
   100% {
     opacity: 1;
     transform: translateY(0);
-    filter: blur(0px);
+    filter: blur(0);
   }
 }
 
-.cinematic-welcome-msg .user-name-highlight {
+.highlight-personal-os {
   color: #C084FC;
   font-weight: 700;
-  text-shadow: 0 0 24px rgba(192, 132, 252, 0.75);
+  text-shadow: 0 0 16px rgba(192, 132, 252, 0.5);
 }
 
-/* Focus • Learn • Build • Grow Tracker under Welcome message */
-.cinematic-focus-tracker {
+/* ==========================================================================
+   4 FEATURE HIGHLIGHTS (SUBTLE & SECONDARY)
+   ========================================================================== */
+
+.welcome-pillars-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1.25rem;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: #64748B;
-  animation: trackerEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.05s forwards;
+  gap: 2.25rem;
+  margin-top: 3.25rem;
+  padding: 0.45rem 1.25rem;
   opacity: 0;
+  animation: pillarsEntrance 0.65s cubic-bezier(0.16, 1, 0.3, 1) 1.15s both;
 }
 
-@keyframes trackerEntrance {
-  0% { opacity: 0; transform: translateY(8px); }
-  100% { opacity: 0.85; transform: translateY(0); }
-}
-
-.cinematic-focus-tracker .bullet-dot {
-  color: #8B5CF6;
-  font-size: 0.8rem;
-}
-
-/* ===================================================
-   DASHBOARD SEAMLESS ENTRANCE
-=================================================== */
-.app-container.app-revealing {
-  animation: appCinematicReveal 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  transform-origin: center center;
-}
-
-@keyframes appCinematicReveal {
+@keyframes pillarsEntrance {
   0% {
-    opacity: 0.82;
-    transform: scale(0.99);
-    filter: blur(3px);
+    opacity: 0;
+    transform: translateY(10px);
   }
   100% {
     opacity: 1;
-    transform: scale(1);
-    filter: blur(0px);
+    transform: translateY(0);
   }
 }
 
-/* ===================================================
-   RESPONSIVE LAYOUT SCALING
-=================================================== */
-@media (max-width: 1024px) {
-  .corner-metadata {
+.welcome-pillar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: left;
+}
+
+.pillar-icon {
+  color: #C084FC;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 6px rgba(192, 132, 252, 0.5));
+}
+
+.pillar-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.pillar-heading {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.pillar-caption {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.74rem;
+  color: #94A3B8;
+  font-weight: 500;
+}
+
+.pillar-v-sep {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* ==========================================================================
+   BOTTOM CENTER: SCROLL TO EXPLORE
+   ========================================================================== */
+
+.welcome-scroll-explore {
+  position: absolute;
+  bottom: 2.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  z-index: 10;
+  pointer-events: none;
+  animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+
+.scroll-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: #64748B;
+  text-transform: uppercase;
+}
+
+.mouse-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.mouse-body {
+  width: 16px;
+  height: 24px;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  padding-top: 3px;
+}
+
+.mouse-wheel-dot {
+  width: 2px;
+  height: 4.5px;
+  background: #FFFFFF;
+  border-radius: 2px;
+  animation: mouseWheelMove 1.8s ease-in-out infinite;
+}
+
+@keyframes mouseWheelMove {
+  0% { transform: translateY(0); opacity: 1; }
+  60% { transform: translateY(6px); opacity: 0.2; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.mouse-arrow {
+  color: rgba(255, 255, 255, 0.4);
+  animation: arrowBounce 1.8s ease-in-out infinite;
+}
+
+@keyframes arrowBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(2px); }
+}
+
+/* ==========================================================================
+   BOTTOM LEFT & RIGHT
+   ========================================================================== */
+
+.welcome-bottom-left {
+  position: absolute;
+  bottom: 2.25rem;
+  left: 2.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  z-index: 10;
+  pointer-events: none;
+  animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+
+.bottom-left-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.bottom-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #94A3B8;
+  letter-spacing: 0.08em;
+}
+
+.bottom-subtitle {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.64rem;
+  color: #64748B;
+  letter-spacing: 0.05em;
+}
+
+.bottom-dash {
+  width: 24px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.welcome-bottom-right {
+  position: absolute;
+  bottom: 2.25rem;
+  right: 2.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  z-index: 10;
+  pointer-events: none;
+  animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+
+.bottom-tagline {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.74rem;
+  font-style: italic;
+  color: #94A3B8;
+  letter-spacing: 0.04em;
+}
+
+/* Common Keyframe Helpers */
+@keyframes fadeInDown {
+  0% { opacity: 0; transform: translateY(-8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInRight {
+  0% { opacity: 0; transform: translateX(8px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+
+@media (max-width: 960px) {
+  .welcome-pillars-row {
+    gap: 1.15rem;
+    flex-wrap: wrap;
+  }
+  .pillar-v-sep {
     display: none;
   }
-  .cinematic-wordmark {
-    font-size: 3.5rem;
-  }
-  .cinematic-tagline {
-    font-size: 1.85rem;
+  .welcome-right-vertical {
+    display: none;
   }
 }
 
-@media (max-width: 640px) {
-  .cinematic-logo {
-    width: 85px;
-    height: 85px;
-    border-radius: 24px;
+@media (max-width: 680px) {
+  .welcome-hero-greeting {
+    font-size: clamp(1.8rem, 7vw, 2.6rem);
+    gap: 0.4rem;
   }
-  .cinematic-wordmark {
-    font-size: 2.65rem;
+  .welcome-top-right,
+  .welcome-bottom-right,
+  .welcome-bottom-left {
+    display: none;
   }
-  .cinematic-tagline {
-    font-size: 1.45rem;
-    margin-bottom: 1.75rem;
+  .welcome-top-left {
+    top: 1.5rem;
+    left: 1.5rem;
   }
-  .cinematic-welcome-msg {
-    font-size: 0.95rem;
+  .welcome-scroll-explore {
+    bottom: 1.5rem;
   }
-  .cinematic-focus-tracker {
-    font-size: 0.62rem;
+  .welcome-pillars-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 0.85rem;
-    letter-spacing: 0.2em;
+  }
+}
+
+/* ==========================================================================
+   ACCESSIBILITY: PREFERS-REDUCED-MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-welcome-overlay,
+  .welcome-hero-ambient-glow,
+  .greeting-word-hello,
+  .welcome-name-gradient,
+  .greeting-wave-emoji,
+  .welcome-hero-subtext,
+  .welcome-pillars-row,
+  .mouse-wheel-dot,
+  .mouse-arrow {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
   }
 }

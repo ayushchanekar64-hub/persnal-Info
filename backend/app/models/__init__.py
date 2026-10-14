@@ -4,11 +4,32 @@ from backend.app.models.goal import Goal, Milestone
 from backend.app.models.habit import Habit, HabitLog
 from backend.app.models.note import Note
 from backend.app.models.learning import LearningItem, LearningSession
-from backend.app.models.coding import CodingProblem
+from backend.app.models.coding import CodingProblem, CodingSession, CodingMistake, CodingAchievement
 from backend.app.models.career import CareerProfile, JobApplication, Interview
 from backend.app.models.finance import FinanceTransaction, FinanceBudget
 from backend.app.models.activity import Activity
 from backend.app.models.notification import Notification
+from backend.app.models.profile import (
+    UserProfile,
+    UserEducation,
+    UserCertification,
+    UserExperience,
+    UserCareerPreference,
+    UserSkill,
+    UserLinks,
+    UserPreferences,
+    UserDocument,
+    UserContact,
+)
+from backend.app.models.family import (
+    FamilyMember,
+    FamilyMemberEducation,
+    FamilyMemberCareer,
+    FamilyMemberDocument,
+    FamilyMemberContact,
+)
+from backend.app.models.inbox import InboxItem
+
 
 __all__ = [
     "User",
@@ -22,6 +43,9 @@ __all__ = [
     "LearningItem",
     "LearningSession",
     "CodingProblem",
+    "CodingSession",
+    "CodingMistake",
+    "CodingAchievement",
     "CareerProfile",
     "JobApplication",
     "Interview",
@@ -29,4 +53,20 @@ __all__ = [
     "FinanceBudget",
     "Activity",
     "Notification",
+    "UserProfile",
+    "UserEducation",
+    "UserCertification",
+    "UserExperience",
+    "UserCareerPreference",
+    "UserSkill",
+    "UserLinks",
+    "UserPreferences",
+    "UserDocument",
+    "UserContact",
+    "FamilyMember",
+    "FamilyMemberEducation",
+    "FamilyMemberCareer",
+    "FamilyMemberDocument",
+    "FamilyMemberContact",
+    "InboxItem",
 ]

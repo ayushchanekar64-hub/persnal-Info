@@ -10,17 +10,30 @@ from backend.app.db.base import Base
 
 logger = logging.getLogger("mynexus.db")
 
+def get_normalized_db_url(url: str) -> str:
+    if not url:
+        return settings.FALLBACK_DATABASE_URL
+    # Render and Heroku provide postgres:// or postgresql:// instead of postgresql+asyncpg://
+    if url.startswith("postgres://"):
+        return url.replace("postgres://", "postgresql+asyncpg://", 1)
+    if url.startswith("postgresql://") and not url.startswith("postgresql+asyncpg://"):
+        return url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    return url
+
 # Primary Engine
+primary_db_url = get_normalized_db_url(settings.DATABASE_URL)
 try:
+    is_sqlite = "sqlite" in primary_db_url
+    connect_args = {} if is_sqlite else {"timeout": 10}
     engine = create_async_engine(
-        settings.DATABASE_URL,
+        primary_db_url,
         echo=False,
         future=True,
         pool_pre_ping=True,
-        connect_args={"timeout": 2}
+        connect_args=connect_args
     )
 except Exception as e:
-    logger.warning(f"Failed to create primary engine with {settings.DATABASE_URL}: {e}")
+    logger.warning(f"Failed to create primary engine with {primary_db_url}: {e}")
     engine = create_async_engine(
         settings.FALLBACK_DATABASE_URL,
         echo=False,

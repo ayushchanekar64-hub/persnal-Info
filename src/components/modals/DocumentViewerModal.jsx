@@ -118,6 +118,7 @@ export default function DocumentViewerModal({
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
   const [blobUrl, setBlobUrl] = useState(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   // Compute navigation indices if documents array is provided
   const currentIndex = useMemo(() => {
@@ -220,7 +221,6 @@ export default function DocumentViewerModal({
   if (!isOpen || !currentDoc) return null;
 
   const activeUrl = blobUrl || currentDoc.file_url;
-  const [isDownloading, setIsDownloading] = useState(false);
   const normRot = ((rotation % 360) + 360) % 360;
 
   const handleDownload = async () => {

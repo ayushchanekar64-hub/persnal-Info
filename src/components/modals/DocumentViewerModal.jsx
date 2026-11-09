@@ -39,6 +39,75 @@ function dataURLtoBlob(dataurl) {
   }
 }
 
+// Generate rotated image as a Blob preserving full original resolution and quality
+function getRotatedImageBlob(imageUrl, rotationDegrees, mimeType = 'image/png') {
+  return new Promise((resolve, reject) => {
+    const rot = ((rotationDegrees % 360) + 360) % 360;
+    if (rot === 0) {
+      resolve(null);
+      return;
+    }
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+
+    let resolved = false;
+    const processImage = () => {
+      if (resolved) return;
+      resolved = true;
+      try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const origW = img.naturalWidth || img.width;
+        const origH = img.naturalHeight || img.height;
+
+        if (rot === 90 || rot === 270) {
+          canvas.width = origH;
+          canvas.height = origW;
+        } else {
+          canvas.width = origW;
+          canvas.height = origH;
+        }
+
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate((rot * Math.PI) / 180);
+        ctx.drawImage(img, -origW / 2, -origH / 2);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              try {
+                const dataUrl = canvas.toDataURL(mimeType, 0.95);
+                resolve(dataURLtoBlob(dataUrl));
+              } catch (e) {
+                reject(e);
+              }
+            }
+          },
+          mimeType,
+          0.95
+        );
+      } catch (err) {
+        reject(err);
+      }
+    };
+
+    img.onload = processImage;
+    img.onerror = (err) => {
+      if (resolved) return;
+      resolved = true;
+      reject(err);
+    };
+    img.src = imageUrl;
+
+    if (img.complete && img.naturalWidth) {
+      processImage();
+    }
+  });
+}
+
 export default function DocumentViewerModal({
   isOpen,
   onClose,
@@ -151,6 +220,78 @@ export default function DocumentViewerModal({
   if (!isOpen || !currentDoc) return null;
 
   const activeUrl = blobUrl || currentDoc.file_url;
+  const [isDownloading, setIsDownloading] = useState(false);
+  const normRot = ((rotation % 360) + 360) % 360;
+
+  const handleDownload = async () => {
+    if (!activeUrl || isDownloading) return;
+
+    const baseFileName = currentDoc.file_name || 'document';
+
+    // If it's an image and has been rotated, generate and download rotated image
+    if (fileKind === 'image' && normRot !== 0) {
+      setIsDownloading(true);
+      try {
+        const isPng = baseFileName.toLowerCase().endsWith('.png') || (currentDoc.file_url && currentDoc.file_url.includes('image/png'));
+        const isWebp = baseFileName.toLowerCase().endsWith('.webp') || (currentDoc.file_url && currentDoc.file_url.includes('image/webp'));
+        const mimeType = isPng ? 'image/png' : isWebp ? 'image/webp' : 'image/jpeg';
+
+        const rotatedBlob = await getRotatedImageBlob(activeUrl, normRot, mimeType);
+        if (rotatedBlob) {
+          const downloadUrl = URL.createObjectURL(rotatedBlob);
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+
+          let downloadName = baseFileName;
+          if (!/\.[a-zA-Z0-9]{3,4}$/.test(baseFileName)) {
+            const ext = isPng ? '.png' : isWebp ? '.webp' : '.jpg';
+            downloadName = `${baseFileName}${ext}`;
+          }
+
+          link.download = downloadName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setTimeout(() => URL.revokeObjectURL(downloadUrl), 10000);
+          return;
+        }
+      } catch (err) {
+        console.error('Error generating rotated download, falling back to original:', err);
+      } finally {
+        setIsDownloading(false);
+      }
+    }
+
+    // Default download for non-rotated or non-image
+    const link = document.createElement('a');
+    link.href = activeUrl;
+    link.download = baseFileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleOpenTab = async (e) => {
+    if (fileKind === 'image' && normRot !== 0) {
+      if (e) e.preventDefault();
+      try {
+        const isPng = (currentDoc.file_name || '').toLowerCase().endsWith('.png') || (currentDoc.file_url && currentDoc.file_url.includes('image/png'));
+        const isWebp = (currentDoc.file_name || '').toLowerCase().endsWith('.webp') || (currentDoc.file_url && currentDoc.file_url.includes('image/webp'));
+        const mimeType = isPng ? 'image/png' : isWebp ? 'image/webp' : 'image/jpeg';
+
+        const rotatedBlob = await getRotatedImageBlob(activeUrl, normRot, mimeType);
+        if (rotatedBlob) {
+          const rotatedUrl = URL.createObjectURL(rotatedBlob);
+          window.open(rotatedUrl, '_blank');
+          setTimeout(() => URL.revokeObjectURL(rotatedUrl), 60000);
+          return;
+        }
+      } catch (err) {
+        console.error('Error opening rotated tab:', err);
+      }
+    }
+    window.open(activeUrl, '_blank');
+  };
 
   return createPortal(
     <div className="doc-viewer-overlay" onClick={onClose}>
@@ -249,29 +390,35 @@ export default function DocumentViewerModal({
 
             {/* Open in new window / tab */}
             {activeUrl && (
-              <a
-                href={activeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={handleOpenTab}
                 className="doc-viewer-btn"
-                title="Open in new browser tab"
+                title={normRot !== 0 ? `Open Rotated (${normRot}°) in new browser tab` : "Open in new browser tab"}
               >
                 <ExternalLink size={15} />
                 <span>Open Tab</span>
-              </a>
+              </button>
             )}
 
-            {/* Direct download */}
+            {/* Direct download (Rotated in exact orientation if rotated) */}
             {activeUrl && (
-              <a
-                href={activeUrl}
-                download={currentDoc.file_name || 'document'}
+              <button
+                type="button"
+                onClick={handleDownload}
+                disabled={isDownloading}
                 className="doc-viewer-btn primary"
-                title="Download original file"
+                title={normRot !== 0 ? `Download in current rotation (${normRot}°)` : "Download file"}
               >
                 <Download size={15} />
-                <span>Download</span>
-              </a>
+                <span>
+                  {isDownloading
+                    ? 'Rotating...'
+                    : normRot !== 0
+                    ? `Download (${normRot}°)`
+                    : 'Download'}
+                </span>
+              </button>
             )}
 
             {/* Close */}
@@ -314,13 +461,13 @@ export default function DocumentViewerModal({
                   transform: `scale(${zoom}) rotate(${rotation}deg)`
                 }}
               />
-              {/* Floating zoom indicator */}
+              {/* Floating zoom & rotate indicator */}
               <div className="doc-viewer-zoom-bar">
                 <button
                   type="button"
                   className="doc-viewer-zoom-btn"
                   onClick={() => setZoom(z => Math.max(z - 0.25, 0.5))}
-                  title="Zoom Out"
+                  title="Zoom Out (-)"
                 >
                   <ZoomOut size={14} />
                 </button>
@@ -329,18 +476,28 @@ export default function DocumentViewerModal({
                   type="button"
                   className="doc-viewer-zoom-btn"
                   onClick={() => setZoom(z => Math.min(z + 0.25, 3))}
-                  title="Zoom In"
+                  title="Zoom In (+)"
                 >
                   <ZoomIn size={14} />
                 </button>
                 <button
                   type="button"
                   className="doc-viewer-zoom-btn"
-                  onClick={() => { setZoom(1); setRotation(0); }}
-                  title="Reset"
+                  onClick={() => setRotation(r => (r + 90) % 360)}
+                  title={`Rotate 90° clockwise (Current: ${normRot}°)`}
                 >
-                  <RotateCcw size={14} />
+                  <RotateCw size={14} />
                 </button>
+                {(zoom !== 1 || normRot !== 0) && (
+                  <button
+                    type="button"
+                    className="doc-viewer-zoom-btn"
+                    onClick={() => { setZoom(1); setRotation(0); }}
+                    title="Reset Zoom & Rotation"
+                  >
+                    <RotateCcw size={14} />
+                  </button>
+                )}
               </div>
             </div>
           ) : (
@@ -362,14 +519,15 @@ export default function DocumentViewerModal({
                   <ExternalLink size={15} />
                   <span>Open in Browser</span>
                 </a>
-                <a
-                  href={activeUrl}
-                  download={currentDoc.file_name || 'document'}
+                <button
+                  type="button"
+                  onClick={handleDownload}
+                  disabled={isDownloading}
                   className="doc-viewer-btn primary"
                 >
                   <Download size={15} />
                   <span>Download Document</span>
-                </a>
+                </button>
               </div>
             </div>
           )}

@@ -148,6 +148,69 @@
   z-index: 900;
 }
 
+/* SYNC ALL DATA BUTTON */
+.dashboard-sync-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-md);
+  background: rgba(124, 58, 237, 0.12);
+  border: 1px solid rgba(124, 58, 237, 0.32);
+  color: #DDD6FE;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.dashboard-sync-btn:hover {
+  background: rgba(124, 58, 237, 0.22);
+  border-color: #8B5CF6;
+  color: #FFFFFF;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.28);
+}
+
+.dashboard-sync-btn:active {
+  transform: translateY(0);
+}
+
+.dashboard-sync-btn.syncing {
+  opacity: 0.85;
+  cursor: wait;
+}
+
+.dashboard-sync-btn.synced {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #34D399;
+}
+
+.dashboard-sync-btn .sync-icon {
+  transition: transform var(--transition-fast);
+}
+
+.dashboard-sync-btn .sync-icon.spinning {
+  animation: dashboardSpin 0.9s linear infinite;
+}
+
+.dashboard-sync-btn .sync-icon-success {
+  color: #34D399;
+  animation: checkmarkPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes dashboardSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .timeframe-dropdown-wrapper {
   position: relative;
   z-index: 950;
@@ -1424,6 +1487,11 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
+  }
+
+  .dashboard-sync-btn {
+    flex: 1;
+    justify-content: center;
   }
 
   .timeframe-dropdown-wrapper {

@@ -5,7 +5,9 @@ import {
   SlidersHorizontal,
   Sparkles,
   ChevronDown,
-  Check
+  Check,
+  RotateCw,
+  CheckCheck
 } from 'lucide-react';
 import DashboardDateRangePicker from './DashboardDateRangePicker';
 
@@ -17,9 +19,13 @@ export default function ExecutiveSummaryBar({
   onFromChange,
   onToChange,
   onResetDateRange,
-  onOpenQuickAction
+  onOpenQuickAction,
+  onSync,
+  isSyncing = false
 }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [localSyncing, setLocalSyncing] = useState(false);
+  const [justSynced, setJustSynced] = useState(false);
   const dropdownRef = useRef(null);
 
   // Month list from January to Current Month dynamically
@@ -105,6 +111,32 @@ export default function ExecutiveSummaryBar({
     setDropdownOpen(false);
   };
 
+  const syncing = isSyncing || localSyncing;
+
+  const handleSyncAll = async () => {
+    if (syncing) return;
+    setLocalSyncing(true);
+    setJustSynced(false);
+
+    // Cover all data by clearing date ranges and setting month to All Months
+    setSelectedMonth('All Months');
+    if (onResetDateRange) {
+      onResetDateRange();
+    }
+
+    try {
+      if (onSync) {
+        await onSync();
+      }
+      setJustSynced(true);
+      setTimeout(() => setJustSynced(false), 2500);
+    } catch (err) {
+      console.error('Data sync failed:', err);
+    } finally {
+      setLocalSyncing(false);
+    }
+  };
+
   return (
     <div className="dashboard-reference-header animate-fade-in-up stagger-1">
       {/* Left: Big bold title */}
@@ -121,8 +153,24 @@ export default function ExecutiveSummaryBar({
         onReset={onResetDateRange}
       />
 
-      {/* Right: Controls (Month Dropdown + Share + Filter + Action Pill) */}
+      {/* Right: Controls (Sync All + Month Dropdown + Share + Filter + Action Pill) */}
       <div className="dashboard-header-controls-row">
+        {/* Sync All Data Button (Covers all data across workspace) */}
+        <button
+          type="button"
+          className={`dashboard-sync-btn ${syncing ? 'syncing' : ''} ${justSynced ? 'synced' : ''}`}
+          onClick={handleSyncAll}
+          title="Sync & cover all data across entire workspace (all time)"
+          aria-label="Sync all data"
+        >
+          {justSynced ? (
+            <CheckCheck size={14} className="sync-icon-success" />
+          ) : (
+            <RotateCw size={13} className={`sync-icon ${syncing ? 'spinning' : ''}`} />
+          )}
+          <span>{syncing ? 'Syncing...' : justSynced ? 'All Data Synced' : 'Sync All Data'}</span>
+        </button>
+
         {/* Dynamic Month Dropdown */}
         <div className="timeframe-dropdown-wrapper" ref={dropdownRef}>
           <button

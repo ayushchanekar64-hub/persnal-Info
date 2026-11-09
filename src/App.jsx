@@ -570,6 +570,11 @@ export default function App() {
                       onToChange={(to) => setDateRange(prev => ({ ...prev, to }))}
                       onResetDateRange={() => setDateRange({ from: '', to: '' })}
                       onOpenQuickAction={handleOpenCreate}
+                      onSync={async () => {
+                        await loadUserData();
+                        setInboxToast('All workspace data synced successfully ⚡');
+                        setTimeout(() => setInboxToast(null), 3500);
+                      }}
                     />
 
                     {/* Top Row: 2x2 KPI Cards on Left + Striped Bar Chart on Right */}

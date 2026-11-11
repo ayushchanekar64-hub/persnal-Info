@@ -285,12 +285,12 @@ export default function TaskDetailModal({
           width: '100%',
           maxWidth: 680,
           maxHeight: '88vh',
-          backgroundColor: 'var(--bg-surface, #1A1B20)',
+          backgroundColor: 'var(--bg-surface, #121620)',
           border: '1px solid var(--border-medium, rgba(255, 255, 255, 0.12))',
           borderRadius: '18px',
           display: 'flex',
           flexDirection: 'column',
-          boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 35px rgba(124, 58, 237, 0.12)',
+          boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 35px rgba(6, 182, 212, 0.1)',
           overflow: 'hidden',
           animation: 'slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1)'
         }}

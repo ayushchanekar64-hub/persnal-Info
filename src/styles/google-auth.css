@@ -38,8 +38,8 @@
 .google-auth-dialog {
   width: 100% !important;
   max-width: 440px !important;
-  background: #18191E !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: #121620 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 20px !important;
   box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.06) !important;
   overflow: hidden !important;

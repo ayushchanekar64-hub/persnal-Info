@@ -146,7 +146,7 @@ export default function GoogleAuthModal({ isOpen, onClose, onSuccess }) {
       name: nameToUse,
       email: cleanEmail,
       avatar: nameToUse[0].toUpperCase(),
-      avatarBg: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+      avatarBg: 'linear-gradient(135deg, #4F46E5 0%, #0EA5E9 100%)',
       badge: 'Active',
       access_key: googlePasskey.trim() || null
     };
@@ -336,7 +336,7 @@ export default function GoogleAuthModal({ isOpen, onClose, onSuccess }) {
             <div className="google-input-group">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <label className="google-input-label">Master Security Passkey</label>
-                <span style={{ fontSize: '0.7rem', color: '#8B5CF6', fontWeight: 600 }}>Required if new</span>
+                <span style={{ fontSize: '0.7rem', color: '#38BDF8', fontWeight: 600 }}>Required if new</span>
               </div>
               <div style={{ position: 'relative' }}>
                 <input

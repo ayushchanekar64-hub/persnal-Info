@@ -53,8 +53,8 @@
 }
 
 .date-picker-group.active-filter {
-  border-color: rgba(99, 102, 241, 0.4);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.16);
 }
 
 .date-picker-icon-badge {
@@ -64,8 +64,8 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: rgba(99, 102, 241, 0.15);
-  color: #A78BFA;
+  background: rgba(56, 189, 248, 0.14);
+  color: #38BDF8;
   flex-shrink: 0;
 }
 
@@ -105,8 +105,8 @@
 
 .date-input-native:focus {
   background: var(--bg-surface-muted);
-  border-color: var(--primary-500);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  border-color: #38BDF8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
 }
 
 .date-arrow-divider {
@@ -155,9 +155,9 @@
   gap: 0.45rem;
   padding: 0.45rem 0.85rem;
   border-radius: var(--radius-md);
-  background: rgba(124, 58, 237, 0.12);
-  border: 1px solid rgba(124, 58, 237, 0.32);
-  color: #DDD6FE;
+  background: rgba(6, 182, 212, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.32);
+  color: #BAE6FD;
   font-family: inherit;
   font-size: 0.82rem;
   font-weight: 600;
@@ -167,11 +167,11 @@
 }
 
 .dashboard-sync-btn:hover {
-  background: rgba(124, 58, 237, 0.22);
-  border-color: #8B5CF6;
+  background: rgba(6, 182, 212, 0.2);
+  border-color: #38BDF8;
   color: #FFFFFF;
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.28);
+  box-shadow: 0 4px 14px rgba(6, 182, 212, 0.24);
 }
 
 .dashboard-sync-btn:active {
@@ -263,7 +263,7 @@
   border-radius: var(--radius-md);
   padding: 0.4rem;
   z-index: 99999;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.9), 0 0 1px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.9), 0 0 1px rgba(56, 189, 248, 0.35);
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
@@ -308,8 +308,8 @@
 }
 
 .timeframe-opt-btn.active {
-  background: rgba(99, 102, 241, 0.18);
-  color: #A78BFA;
+  background: rgba(6, 182, 212, 0.15);
+  color: #38BDF8;
   font-weight: 600;
 }
 
@@ -327,7 +327,7 @@
 }
 
 .opt-check-icon {
-  color: #A78BFA;
+  color: #38BDF8;
   flex-shrink: 0;
 }
 
@@ -396,8 +396,8 @@
 
 .kpi-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 14px 28px -6px rgba(0, 0, 0, 0.45), 0 0 24px -6px var(--kpi-glow, rgba(139, 92, 246, 0.25));
-  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 14px 28px -6px rgba(0, 0, 0, 0.5), 0 0 24px -6px var(--kpi-glow, rgba(56, 189, 248, 0.25));
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .kpi-card-glow {
@@ -581,11 +581,11 @@
   position: absolute;
   top: -8px;
   transform: translateX(-50%);
-  background: rgba(26, 27, 32, 0.96);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(18, 22, 32, 0.97);
+  border: 1px solid rgba(56, 189, 248, 0.24);
   border-radius: var(--radius-md);
   padding: 0.55rem 0.8rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65);
   z-index: 10;
   pointer-events: none;
   animation: popIn 0.2s var(--ease-spring);
@@ -596,7 +596,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #6366F1;
+  background: #38BDF8;
   display: inline-block;
   margin-right: 4px;
 }
@@ -669,8 +669,8 @@
 .striped-bar-fill {
   width: 100%;
   border-radius: 6px 6px 0 0;
-  background-color: #242630;
-  /* Striped diagonal pattern matching reference */
+  background-color: #1D2332;
+  /* Striped diagonal pattern matching obsidian engineering reference */
   background-image: repeating-linear-gradient(
     -45deg,
     transparent,
@@ -682,14 +682,14 @@
 }
 
 .striped-bar-column:hover .striped-bar-fill {
-  background-color: #2E3240;
+  background-color: #273044;
 }
 
 /* Active Highlight Bar */
 .striped-bar-column.active-highlight .striped-bar-fill {
-  background: linear-gradient(180deg, #A78BFA 0%, #8B5CF6 50%, #7C3AED 100%);
+  background: linear-gradient(180deg, #38BDF8 0%, #6366F1 100%);
   background-image: none;
-  box-shadow: 0 0 18px rgba(139, 92, 246, 0.6), 0 -2px 6px rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.45), 0 -2px 6px rgba(255, 255, 255, 0.28);
 }
 
 .striped-bar-label {
@@ -783,11 +783,11 @@
 
 .curve-chart-tooltip {
   position: absolute;
-  background: rgba(26, 27, 32, 0.96);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(18, 22, 32, 0.97);
+  border: 1px solid rgba(56, 189, 248, 0.24);
   border-radius: var(--radius-md);
   padding: 0.55rem 0.75rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65);
   z-index: 10;
   pointer-events: none;
   font-size: 0.72rem;
@@ -824,9 +824,9 @@
   border-radius: 50%;
 }
 
-.tooltip-data-row .dot.purple { background: #8B5CF6; }
+.tooltip-data-row .dot.purple { background: #6366F1; }
 .tooltip-data-row .dot.amber { background: #F59E0B; }
-.tooltip-data-row .dot.pink { background: #EC4899; }
+.tooltip-data-row .dot.pink { background: #06B6D4; }
 
 .tooltip-data-row .val {
   font-weight: 600;
@@ -864,9 +864,9 @@
 }
 
 .curve-tick-btn.active-tick {
-  color: #A78BFA;
+  color: #38BDF8;
   font-weight: 700;
-  background: rgba(139, 92, 246, 0.15);
+  background: rgba(56, 189, 248, 0.15);
 }
 
 /* Donut Ring Card */
@@ -1148,7 +1148,7 @@
   font-size: 0.835rem;
   font-weight: 700;
   font-family: var(--font-mono, monospace);
-  color: #8B5CF6;
+  color: #38BDF8;
 }
 
 .goal-footer-row {
@@ -1179,7 +1179,7 @@
   left: 0;
   right: 0;
   height: 2.5px;
-  background: linear-gradient(90deg, #4F46E5 0%, #6366F1 50%, #8B5CF6 100%);
+  background: linear-gradient(90deg, #6366F1 0%, #06B6D4 100%);
 }
 
 .ai-brief-header {
@@ -1194,9 +1194,9 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.25rem 0.65rem;
-  background: rgba(99, 102, 241, 0.12);
-  color: #818CF8;
-  border: 1px solid rgba(99, 102, 241, 0.25);
+  background: rgba(6, 182, 212, 0.12);
+  color: #38BDF8;
+  border: 1px solid rgba(56, 189, 248, 0.28);
   border-radius: var(--radius-full);
   font-size: 0.725rem;
   font-weight: 700;
@@ -1252,7 +1252,7 @@
 }
 
 .ai-brief-item:hover {
-  border-color: rgba(99, 102, 241, 0.35);
+  border-color: rgba(56, 189, 248, 0.35);
   background: var(--bg-surface-hover);
   transform: translateX(2px);
 }
@@ -1261,7 +1261,7 @@
   width: 7px;
   height: 7px;
   border-radius: var(--radius-full);
-  background: #6366F1;
+  background: #38BDF8;
   margin-top: 0.42rem;
   flex-shrink: 0;
 }
@@ -1279,8 +1279,8 @@
 }
 
 .ai-ask-bar:focus-within {
-  border-color: #6366F1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+  border-color: #38BDF8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
 }
 
 .ai-ask-input {
@@ -1322,9 +1322,9 @@
 }
 
 .prompt-chip:hover {
-  background: rgba(99, 102, 241, 0.16);
+  background: rgba(6, 182, 212, 0.16);
   color: #FFFFFF;
-  border-color: rgba(99, 102, 241, 0.35);
+  border-color: rgba(56, 189, 248, 0.35);
 }
 
 .ai-response-box {
@@ -1332,7 +1332,7 @@
   padding: 0.85rem 1rem;
   background: var(--bg-surface-muted);
   border-radius: var(--radius-md);
-  border-left: 3px solid #6366F1;
+  border-left: 3px solid #06B6D4;
   border-top: 1px solid var(--border-light);
   border-right: 1px solid var(--border-light);
   border-bottom: 1px solid var(--border-light);
@@ -1358,8 +1358,8 @@
 }
 
 [data-theme="light"] .date-picker-group.active-filter {
-  border-color: #A78BFA !important;
-  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.15) !important;
+  border-color: #38BDF8 !important;
+  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.15) !important;
 }
 
 [data-theme="light"] .striped-chart-tooltip,
@@ -1386,9 +1386,9 @@
 }
 
 [data-theme="light"] .prompt-chip:hover {
-  background: #EDE9FE !important;
-  color: #6D28D9 !important;
-  border-color: #DDD6FE !important;
+  background: #E0F2FE !important;
+  color: #0369A1 !important;
+  border-color: #BAE6FD !important;
 }
 
 [data-theme="light"] .kpi-card {
@@ -1425,9 +1425,9 @@
 }
 
 [data-theme="light"] .striped-bar-column.active-highlight .striped-bar-fill {
-  background: linear-gradient(180deg, #8B5CF6 0%, #7C3AED 100%);
+  background: linear-gradient(180deg, #0EA5E9 0%, #4F46E5 100%);
   background-image: none;
-  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.32);
 }
 
 [data-theme="light"] .donut-bg-track,

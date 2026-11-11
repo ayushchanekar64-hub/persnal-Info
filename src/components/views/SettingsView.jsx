@@ -83,7 +83,7 @@ export default function SettingsView({ user, theme, setTheme }) {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', marginBottom: '1.5rem' }}>
-              <div className="user-avatar" style={{ width: 62, height: 62, fontSize: '1.45rem', border: '2px solid rgba(139, 92, 246, 0.4)', boxShadow: '0 0 16px rgba(139, 92, 246, 0.25)' }}>
+              <div className="user-avatar" style={{ width: 62, height: 62, fontSize: '1.45rem', border: '2px solid rgba(56, 189, 248, 0.4)', boxShadow: '0 0 16px rgba(6, 182, 212, 0.25)' }}>
                 {user?.avatar ? user.avatar : (user?.name ? user.name[0].toUpperCase() : <User size={26} />)}
               </div>
               <div>

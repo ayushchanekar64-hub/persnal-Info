@@ -144,7 +144,7 @@ export default function GoalsView({ goals: initialGoals = [], onOpenQuickAction,
         <button 
           className="btn btn-primary" 
           onClick={() => onOpenQuickAction ? onOpenQuickAction('goal') : null}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 14px rgba(139, 92, 246, 0.35)' }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 14px rgba(14, 165, 233, 0.32)' }}
         >
           <Plus size={16} />
           <span>New Goal</span>

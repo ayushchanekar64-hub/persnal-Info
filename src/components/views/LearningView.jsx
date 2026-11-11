@@ -152,7 +152,7 @@ export default function LearningView({ learning = [], onOpenQuickAction }) {
         <button 
           className="btn btn-primary" 
           onClick={() => onOpenQuickAction ? onOpenQuickAction('learning') : null}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 14px rgba(139, 92, 246, 0.35)' }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 14px rgba(14, 165, 233, 0.32)' }}
         >
           <Plus size={16} />
           <span>Log Study Time</span>

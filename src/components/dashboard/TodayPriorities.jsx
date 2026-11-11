@@ -26,7 +26,7 @@ export default function TodayPriorities({ tasks = [], onToggleTask, onOpenQuickA
           particleCount: 35,
           spread: 45,
           origin: { y: 0.8 },
-          colors: ['#6366F1', '#8B5CF6', '#10B981']
+          colors: ['#6366F1', '#06B6D4', '#10B981']
         });
       } catch (e) {
         // Confetti optional

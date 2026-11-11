@@ -2,17 +2,17 @@
   <defs>
     <!-- Background Gradient -->
     <linearGradient id="mindBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0F1E24" />
-      <stop offset="50%" stop-color="#16343D" />
-      <stop offset="100%" stop-color="#10252D" />
+      <stop offset="0%" stop-color="#0B0E14" />
+      <stop offset="50%" stop-color="#111827" />
+      <stop offset="100%" stop-color="#080A0F" />
     </linearGradient>
 
     <!-- Neural Glow Gradient -->
     <linearGradient id="mindNeuralGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#38BDF8" />
-      <stop offset="35%" stop-color="#818CF8" />
-      <stop offset="70%" stop-color="#A855F7" />
-      <stop offset="100%" stop-color="#C084FC" />
+      <stop offset="35%" stop-color="#06B6D4" />
+      <stop offset="70%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#818CF8" />
     </linearGradient>
 
     <!-- Accent Glow Filter -->
@@ -43,11 +43,11 @@
     
     <!-- Top Apex Nodes -->
     <circle cx="76" cy="80" r="6" fill="#38BDF8" />
-    <circle cx="180" cy="80" r="6" fill="#C084FC" />
+    <circle cx="180" cy="80" r="6" fill="#06B6D4" />
 
     <!-- Lower Base Nodes -->
     <circle cx="64" cy="184" r="6" fill="#818CF8" />
-    <circle cx="192" cy="184" r="6" fill="#A855F7" />
+    <circle cx="192" cy="184" r="6" fill="#6366F1" />
 
     <!-- Center Bridge Line -->
     <line x1="128" y1="124" x2="128" y2="178" stroke="url(#mindNeuralGrad)" stroke-width="7" stroke-linecap="round" />

@@ -235,7 +235,7 @@ export default function AddEditMemberModal({ isOpen, onClose, onSave, initialDat
                   onChange={e => setFormData({ ...formData, relationship_type: e.target.value })}
                 >
                   {RELATIONSHIP_OPTIONS.map(opt => (
-                    <option key={opt} value={opt} style={{ background: '#1A1B20', color: '#FFF' }}>{opt}</option>
+                    <option key={opt} value={opt} style={{ background: '#121620', color: '#FFF' }}>{opt}</option>
                   ))}
                 </select>
               </div>
@@ -260,10 +260,10 @@ export default function AddEditMemberModal({ isOpen, onClose, onSave, initialDat
                   value={formData.gender}
                   onChange={e => setFormData({ ...formData, gender: e.target.value })}
                 >
-                  <option value="Male" style={{ background: '#1A1B20' }}>Male</option>
-                  <option value="Female" style={{ background: '#1A1B20' }}>Female</option>
-                  <option value="Other" style={{ background: '#1A1B20' }}>Other</option>
-                  <option value="Prefer not to say" style={{ background: '#1A1B20' }}>Prefer not to say</option>
+                  <option value="Male" style={{ background: '#121620' }}>Male</option>
+                  <option value="Female" style={{ background: '#121620' }}>Female</option>
+                  <option value="Other" style={{ background: '#121620' }}>Other</option>
+                  <option value="Prefer not to say" style={{ background: '#121620' }}>Prefer not to say</option>
                 </select>
               </div>
             </div>

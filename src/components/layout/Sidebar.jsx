@@ -158,7 +158,7 @@ export default React.memo(function Sidebar({
                         <>
                           <span style={{ flex: 1, textAlign: 'left' }}>{item.label}</span>
                           {item.isTriage && (
-                            <span className="pill" style={{ fontSize: '0.62rem', padding: '0.1rem 0.35rem', background: 'rgba(139, 92, 246, 0.15)', color: '#A78BFA', fontWeight: 600 }}>
+                            <span className="pill" style={{ fontSize: '0.62rem', padding: '0.1rem 0.35rem', background: 'rgba(6, 182, 212, 0.14)', color: '#38BDF8', fontWeight: 600 }}>
                               Alt+C
                             </span>
                           )}

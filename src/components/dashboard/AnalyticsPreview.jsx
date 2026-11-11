@@ -208,9 +208,9 @@ function AnalyticsPreview({
     if (totalActivityScore === 0) return [];
 
     const raw = [
-      { id: 'tasks', label: 'Tasks & Execution', val: distTasks, color: '#8B5CF6' },
+      { id: 'tasks', label: 'Tasks & Execution', val: distTasks, color: '#6366F1' },
       { id: 'learning', label: 'Learning & Study', val: distLearning, color: '#3B82F6' },
-      { id: 'coding', label: 'Coding & Practice', val: distCoding, color: '#EC4899' },
+      { id: 'coding', label: 'Coding & Practice', val: distCoding, color: '#06B6D4' },
       { id: 'goals', label: 'Goals & Milestones', val: distGoals, color: '#F59E0B' }
     ].filter(s => s.val > 0);
 
@@ -290,7 +290,7 @@ function AnalyticsPreview({
             {/* Metric 3: Focus & Learning */}
             <div className="curve-metric-item">
               <div className="curve-metric-top">
-                <span className="curve-metric-pct" style={{ color: '#8B5CF6' }}>
+                <span className="curve-metric-pct" style={{ color: '#38BDF8' }}>
                   {learningHours}h
                 </span>
                 <span className="kpi-trend-pill positive" style={{ fontSize: '0.65rem' }}>
@@ -337,9 +337,9 @@ function AnalyticsPreview({
             <svg viewBox="0 0 540 160" className="multi-curve-svg">
               <defs>
                 <linearGradient id="tasksGradientArea" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.35" />
-                  <stop offset="85%" stopColor="#8B5CF6" stopOpacity="0.03" />
-                  <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0" />
+                  <stop offset="0%" stopColor="#6366F1" stopOpacity="0.35" />
+                  <stop offset="85%" stopColor="#6366F1" stopOpacity="0.03" />
+                  <stop offset="100%" stopColor="#6366F1" stopOpacity="0" />
                 </linearGradient>
                 <linearGradient id="focusGradientArea" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.2" />
@@ -381,11 +381,11 @@ function AnalyticsPreview({
                 strokeWidth="1.5"
               />
 
-              {/* Curve 1: Tasks (Purple #8B5CF6) */}
+              {/* Curve 1: Tasks (Indigo #6366F1) */}
               <path
                 d={pathTasks}
                 fill="none"
-                stroke="#8B5CF6"
+                stroke="#6366F1"
                 strokeWidth="2.75"
                 strokeLinecap="round"
               />
@@ -399,12 +399,12 @@ function AnalyticsPreview({
                 strokeLinecap="round"
               />
 
-              {/* Curve 3: Coding (Pink #EC4899) */}
+              {/* Curve 3: Coding (Electric Cyan #06B6D4) */}
               <path
                 d={pathCoding}
                 fill="none"
-                stroke="#EC4899"
-                strokeWidth="2"
+                stroke="#06B6D4"
+                strokeWidth="2.2"
                 strokeLinecap="round"
               />
 
@@ -413,7 +413,7 @@ function AnalyticsPreview({
                 cx={activePointTasks.x}
                 cy={activePointTasks.y}
                 r="9"
-                fill="rgba(139, 92, 246, 0.2)"
+                fill="rgba(99, 102, 241, 0.2)"
               />
 
               {/* Active Intersection Circles */}
@@ -421,7 +421,7 @@ function AnalyticsPreview({
                 cx={activePointTasks.x}
                 cy={activePointTasks.y}
                 r="4.5"
-                fill="#8B5CF6"
+                fill="#6366F1"
                 stroke="#FFFFFF"
                 strokeWidth="2"
                 filter="url(#activeGlow)"
@@ -438,7 +438,7 @@ function AnalyticsPreview({
                 cx={activePointCoding.x}
                 cy={activePointCoding.y}
                 r="4.5"
-                fill="#EC4899"
+                fill="#06B6D4"
                 stroke="#FFFFFF"
                 strokeWidth="2"
               />
@@ -559,7 +559,7 @@ function AnalyticsPreview({
           {/* Right: Legend Breakdown List */}
           <div className="donut-legend-list">
             <div className="donut-legend-row">
-              <div className="donut-legend-bar" style={{ background: '#8B5CF6' }} />
+              <div className="donut-legend-bar" style={{ background: '#6366F1' }} />
               <div className="donut-legend-info">
                 <span className="name">Tasks & Execution</span>
                 <span className="amt">
@@ -579,7 +579,7 @@ function AnalyticsPreview({
             </div>
 
             <div className="donut-legend-row">
-              <div className="donut-legend-bar" style={{ background: '#EC4899' }} />
+              <div className="donut-legend-bar" style={{ background: '#06B6D4' }} />
               <div className="donut-legend-info">
                 <span className="name">Coding & Practice</span>
                 <span className="amt">

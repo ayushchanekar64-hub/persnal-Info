@@ -32,7 +32,7 @@ const InboxTriageModal = lazy(() => import('./components/inbox/InboxTriageModal'
 function ViewLoadingFallback() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '260px', color: 'var(--text-tertiary)', fontSize: '0.88rem', gap: '0.6rem' }}>
-      <div style={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid rgba(139, 92, 246, 0.25)', borderTopColor: '#8B5CF6', animation: 'dashboardSpin 0.75s linear infinite' }} />
+      <div style={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid rgba(56, 189, 248, 0.25)', borderTopColor: '#38BDF8', animation: 'dashboardSpin 0.75s linear infinite' }} />
       <span>Loading workspace view...</span>
     </div>
   );
@@ -521,7 +521,7 @@ export default function App() {
   // Unauthenticated visitors must sign in / register before accessing the personal workspace.
   if (!user || authScreen) {
     return (
-      <Suspense fallback={<div style={{ minHeight: '100vh', background: '#09090B' }} />}>
+      <Suspense fallback={<div style={{ minHeight: '100vh', background: '#0B0E14' }} />}>
         <AuthPage
           initialFlow={authScreen || 'signin'}
           onComplete={() => setAuthScreen(null)}

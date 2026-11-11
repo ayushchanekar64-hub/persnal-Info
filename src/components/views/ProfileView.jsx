@@ -416,10 +416,10 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
             <div className="profile-hero-name-row">
               <h1 className="profile-hero-name">{displayName}</h1>
               <span className="profile-badge-pro">
-                <Sparkles size={11} /> PRO OWNER
+                <Sparkles size={10} /> PRO
               </span>
               <span className="profile-badge-verified">
-                <ShieldCheck size={11} /> Zero-Trust Vault
+                <ShieldCheck size={10} /> Zero-Trust
               </span>
             </div>
 
@@ -428,17 +428,19 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
             </div>
 
             <div className="profile-hero-meta-row">
-              <span className="profile-hero-meta-chip">
+              <span className="profile-hero-meta-item">
                 <Mail size={13} />
                 <span>{b.primary_email || user?.email || 'user@mindos.ai'}</span>
               </span>
-              <span className="profile-hero-meta-chip">
-                <Globe size={13} />
+              <span className="profile-hero-meta-sep">•</span>
+              <span className="profile-hero-meta-item">
+                <MapPin size={13} />
                 <span>{displayLocation}</span>
               </span>
-              <span className="profile-hero-meta-chip secure">
+              <span className="profile-hero-meta-sep">•</span>
+              <span className="profile-hero-meta-item secure">
                 <Lock size={12} />
-                <span>256-bit Encrypted</span>
+                <span>256-bit AES</span>
               </span>
             </div>
           </div>
@@ -448,7 +450,7 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
           <div className="profile-completion-meter-box">
             <div className="profile-completion-label-row">
               <span className="completion-title">
-                <Sparkles size={13} className="sparkle-icon" /> Profile Strength
+                Profile Strength
               </span>
               <span className="profile-completion-pct">{profileData.completion_score}%</span>
             </div>
@@ -462,7 +464,7 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
 
             <div className="profile-completion-hint">
               {profileData.completion_score >= 80 ? (
-                <span className="hint-success">✦ Excellent profile integrity & AI telemetry</span>
+                <span className="hint-success">✦ Verified profile telemetry</span>
               ) : (
                 <button
                   type="button"
@@ -472,7 +474,7 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
                     setEditingBasic(true);
                   }}
                 >
-                  ⚡ Complete Bio & Identity (+25%)
+                  + Complete Bio & Identity (+25%)
                 </button>
               )}
             </div>
@@ -487,8 +489,8 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
                 setEditingBasic(true);
               }}
             >
-              <Edit3 size={14} />
-              <span>Edit Details</span>
+              <Edit3 size={13} />
+              <span>Edit Profile</span>
             </button>
             <button
               type="button"
@@ -497,7 +499,7 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
               title="Sync profile data"
               disabled={loading}
             >
-              <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+              <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
               <span>Sync</span>
             </button>
             {onNavigate && (
@@ -506,10 +508,9 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
                 className="profile-btn-hero-secondary"
                 onClick={() => onNavigate('family')}
                 title="Manage Family Members Vault"
-                style={{ background: 'rgba(99, 102, 241, 0.15)', borderColor: 'rgba(99, 102, 241, 0.35)', color: '#A5B4FC' }}
               >
-                <Users size={14} />
-                <span>Family Vault</span>
+                <Users size={13} />
+                <span>Family</span>
               </button>
             )}
           </div>
@@ -523,13 +524,13 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
         {[
           { id: 'basic', label: 'Basic Info', icon: User, key: 'basic' },
           { id: 'education', label: 'Education', icon: GraduationCap, key: 'education' },
-          { id: 'career', label: 'Experience & Roles', icon: Briefcase, key: 'career' },
-          { id: 'skills', label: 'Skills Matrix', icon: Code2, key: 'skills' },
-          { id: 'links', label: 'Web & Social', icon: LinkIcon, key: 'links' },
+          { id: 'career', label: 'Experience', icon: Briefcase, key: 'career' },
+          { id: 'skills', label: 'Skills', icon: Code2, key: 'skills' },
+          { id: 'links', label: 'Web Links', icon: LinkIcon, key: 'links' },
           { id: 'preferences', label: 'Preferences', icon: Heart, key: 'preferences' },
-          { id: 'documents', label: 'Document Vault', icon: FileText, key: 'documents' },
+          { id: 'documents', label: 'Documents', icon: FileText, key: 'documents' },
           { id: 'contacts', label: 'Contacts', icon: Phone, key: 'contacts' },
-          { id: 'system', label: 'Security & System', icon: ShieldCheck, key: null }
+          { id: 'system', label: 'Security', icon: ShieldCheck, key: null }
         ].map((tab) => {
           const TabIcon = tab.icon;
           const score = tab.key ? profileData.section_completion?.[tab.key] : null;
@@ -541,15 +542,13 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
               className={`profile-tab-btn ${activeSection === tab.id ? 'active' : ''}`}
               onClick={() => setActiveSection(tab.id)}
             >
-              <TabIcon size={15} />
+              <TabIcon size={14} />
               <span>{tab.label}</span>
               {score !== null && (
-                <div
+                <span
                   className={`profile-tab-status-dot ${isComplete ? 'complete' : ''}`}
                   title={isComplete ? 'Section complete' : `Section ${score}% filled`}
-                >
-                  {isComplete ? '✓' : ''}
-                </div>
+                />
               )}
             </button>
           );
@@ -565,54 +564,49 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
            ========================================== */}
         {activeSection === 'basic' && (
           <div className="profile-dossier-wrapper">
-            {/* Header / Action Bar */}
-            <div className="profile-card profile-dossier-header-card">
-              <div className="profile-card-header" style={{ marginBottom: 0, paddingBottom: 0, borderBottom: 'none' }}>
-                <div className="profile-card-title-group">
-                  <div className="profile-card-icon-pill">
-                    <User size={18} />
-                  </div>
-                  <div>
-                    <h3 className="profile-card-title">Identity & Core Dossier</h3>
-                    <p className="profile-card-subtitle">Verified personal credentials, demographics, and AI executive briefing</p>
-                  </div>
+            {/* Compact Frameless Section Toolbar */}
+            <div className="profile-dossier-toolbar">
+              <div className="profile-card-title-group">
+                <div>
+                  <h3 className="profile-card-title" style={{ fontSize: '1.02rem' }}>Identity & Core Dossier</h3>
+                  <p className="profile-card-subtitle">Verified credentials, regional localization, and AI workspace persona</p>
                 </div>
+              </div>
 
-                {!editingBasic ? (
+              {!editingBasic ? (
+                <button
+                  type="button"
+                  className="profile-btn-secondary"
+                  onClick={() => {
+                    setBasicForm(profileData.basic || {});
+                    setEditingBasic(true);
+                  }}
+                >
+                  <Edit3 size={13} />
+                  <span>Edit Dossier</span>
+                </button>
+              ) : (
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button
+                    type="button"
+                    className="profile-btn-secondary"
+                    onClick={() => setEditingBasic(false)}
+                    disabled={saving}
+                  >
+                    <X size={14} />
+                    <span>Cancel</span>
+                  </button>
                   <button
                     type="button"
                     className="profile-btn-primary"
-                    onClick={() => {
-                      setBasicForm(profileData.basic || {});
-                      setEditingBasic(true);
-                    }}
+                    onClick={handleSaveBasic}
+                    disabled={saving}
                   >
-                    <Edit3 size={14} />
-                    <span>Edit Basic Details</span>
+                    <Check size={14} />
+                    <span>{saving ? 'Saving...' : 'Save Changes'}</span>
                   </button>
-                ) : (
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <button
-                      type="button"
-                      className="profile-btn-secondary"
-                      onClick={() => setEditingBasic(false)}
-                      disabled={saving}
-                    >
-                      <X size={14} />
-                      <span>Cancel</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="profile-btn-primary"
-                      onClick={handleSaveBasic}
-                      disabled={saving}
-                    >
-                      <Check size={14} />
-                      <span>{saving ? 'Saving...' : 'Save Changes'}</span>
-                    </button>
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
 
             {editingBasic ? (
@@ -1084,7 +1078,7 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
                             {cert.expiry_date && <span>Expires: {cert.expiry_date}</span>}
                             {cert.credential_id && <span>ID: {cert.credential_id}</span>}
                             {cert.credential_url && (
-                              <a href={cert.credential_url} target="_blank" rel="noopener noreferrer" style={{ color: '#A78BFA', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                              <a href={cert.credential_url} target="_blank" rel="noopener noreferrer" style={{ color: '#38BDF8', display: 'flex', alignItems: 'center', gap: '2px' }}>
                                 View Credential <ExternalLink size={12} />
                               </a>
                             )}
@@ -1330,7 +1324,7 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
                             </div>
                           )}
                           {exp.achievements && (
-                            <div className="profile-item-desc" style={{ color: '#A78BFA' }}>
+                            <div className="profile-item-desc" style={{ color: '#38BDF8' }}>
                               <strong>Achievements:</strong> {exp.achievements}
                             </div>
                           )}
@@ -1559,7 +1553,7 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
                 ].map((item, idx) => (
                   <div key={idx} className="profile-item-entry-card" style={{ padding: '0.85rem 1.15rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                      <LinkIcon size={16} color="#A78BFA" />
+                      <LinkIcon size={16} color="#38BDF8" />
                       <div>
                         <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 600 }}>{item.label}</div>
                         {item.url ? (
@@ -2451,7 +2445,7 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
                         <span>Choose File</span>
                         <input type="file" onChange={handleDocumentFileUpload} style={{ display: 'none' }} />
                       </label>
-                      <span style={{ fontSize: '0.8rem', color: modalForm.file_size ? '#A78BFA' : 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: '0.8rem', color: modalForm.file_size ? '#38BDF8' : 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {modalForm.file_size ? `${modalForm.file_name || 'Attached File'} (${modalForm.file_size})` : 'PDF, JPG, PNG or DOC'}
                       </span>
                     </div>
@@ -2547,8 +2541,9 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
                     borderRadius: '9999px',
                     padding: '0.6rem 1.5rem',
                     fontSize: '0.85rem',
-                    background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
-                    boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)'
+                    background: '#4F46E5',
+                    border: '1px solid rgba(129, 140, 248, 0.4)',
+                    boxShadow: '0 2px 10px rgba(79, 70, 229, 0.28)'
                   }}
                   disabled={saving}
                 >

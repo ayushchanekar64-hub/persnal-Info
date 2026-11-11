@@ -188,7 +188,7 @@ function Header({
           className="btn-icon header-action-icon"
           onClick={onOpenHUD}
           title="Frictionless Inbox — Dump Idea (Alt + C)"
-          style={{ position: 'relative', color: '#A78BFA' }}
+          style={{ position: 'relative', color: '#38BDF8' }}
         >
           <Inbox size={17} />
         </button>
@@ -346,11 +346,11 @@ function Header({
               onClick={() => (openAuth ? openAuth('signup') : setAuthModalOpen(true))}
               style={{
                 gap: '0.35rem',
-                background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
-                borderColor: '#8B5CF6',
+                background: 'linear-gradient(135deg, #4338CA 0%, #4F46E5 100%)',
+                borderColor: 'rgba(129, 140, 248, 0.45)',
                 color: '#FFFFFF',
                 fontWeight: 600,
-                boxShadow: '0 2px 8px rgba(124, 58, 237, 0.3)'
+                boxShadow: '0 2px 10px rgba(79, 70, 229, 0.28)'
               }}
               title="Create a MIND OS Account"
             >

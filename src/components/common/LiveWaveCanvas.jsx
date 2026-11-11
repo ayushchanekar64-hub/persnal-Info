@@ -6,7 +6,7 @@ export default function LiveWaveCanvas() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d', { alpha: false });
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
     let animationFrameId = null;
@@ -23,16 +23,16 @@ export default function LiveWaveCanvas() {
       height = canvas.height = window.innerHeight;
 
       leftGrad = ctx.createLinearGradient(0, height * 0.3, width * 0.45, height * 0.72);
-      leftGrad.addColorStop(0, 'rgba(168, 85, 247, 0.78)');
-      leftGrad.addColorStop(0.35, 'rgba(192, 132, 252, 0.62)');
-      leftGrad.addColorStop(0.72, 'rgba(124, 58, 237, 0.32)');
-      leftGrad.addColorStop(1, 'rgba(124, 58, 237, 0)');
+      leftGrad.addColorStop(0, 'rgba(56, 189, 248, 0.72)');
+      leftGrad.addColorStop(0.35, 'rgba(34, 211, 238, 0.56)');
+      leftGrad.addColorStop(0.72, 'rgba(99, 102, 241, 0.34)');
+      leftGrad.addColorStop(1, 'rgba(99, 102, 241, 0)');
 
       rightGrad = ctx.createLinearGradient(width, height * 0.3, width * 0.55, height * 0.72);
-      rightGrad.addColorStop(0, 'rgba(168, 85, 247, 0.78)');
-      rightGrad.addColorStop(0.35, 'rgba(192, 132, 252, 0.62)');
-      rightGrad.addColorStop(0.72, 'rgba(124, 58, 237, 0.32)');
-      rightGrad.addColorStop(1, 'rgba(124, 58, 237, 0)');
+      rightGrad.addColorStop(0, 'rgba(56, 189, 248, 0.72)');
+      rightGrad.addColorStop(0.35, 'rgba(34, 211, 238, 0.56)');
+      rightGrad.addColorStop(0.72, 'rgba(99, 102, 241, 0.34)');
+      rightGrad.addColorStop(1, 'rgba(99, 102, 241, 0)');
     };
 
     rebuildSizeAndGradients();
@@ -108,9 +108,8 @@ export default function LiveWaveCanvas() {
         return;
       }
 
-      // Pure deep black background matching reference image
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, width, height);
+      // Clear frame cleanly so the underlying obsidian dot-grid background remains visible
+      ctx.clearRect(0, 0, width, height);
 
       time += 0.012; // Smooth, hypnotic silk wave breathing
 
@@ -151,7 +150,7 @@ export default function LiveWaveCanvas() {
         height: '100%',
         pointerEvents: 'none',
         zIndex: 1,
-        background: '#000000'
+        background: 'transparent'
       }}
     />
   );

@@ -505,7 +505,7 @@ export default function DocumentViewerModal({
                   <span style={{ color: '#FBBF24' }}>• Expires: {currentDoc.expiry_date}</span>
                 )}
                 {documents.length > 1 && currentIndex >= 0 && (
-                  <span style={{ color: '#A78BFA' }}>
+                  <span style={{ color: '#38BDF8' }}>
                     • ({currentIndex + 1} of {documents.length})
                   </span>
                 )}
@@ -743,7 +743,7 @@ export default function DocumentViewerModal({
         {currentDoc.description && (
           <div className="doc-viewer-footer">
             <div className="doc-viewer-notes">
-              <Info size={15} color="#A78BFA" style={{ flexShrink: 0 }} />
+              <Info size={15} color="#38BDF8" style={{ flexShrink: 0 }} />
               <span>{currentDoc.description}</span>
             </div>
             <div style={{ fontSize: '0.74rem', color: '#64748B', flexShrink: 0 }}>

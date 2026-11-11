@@ -95,11 +95,11 @@ export default function InboxTriageModal({ isOpen, onClose, onRefreshData }) {
                 width: 34,
                 height: 34,
                 borderRadius: '10px',
-                background: 'rgba(124, 58, 237, 0.15)',
+                background: 'rgba(6, 182, 212, 0.15)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#A78BFA'
+                color: '#38BDF8'
               }}
             >
               <Inbox size={18} />
@@ -193,8 +193,8 @@ export default function InboxTriageModal({ isOpen, onClose, onRefreshData }) {
                           letterSpacing: '0.06em',
                           padding: '0.12rem 0.45rem',
                           borderRadius: '6px',
-                          background: 'rgba(139, 92, 246, 0.15)',
-                          color: '#C084FC'
+                          background: 'rgba(6, 182, 212, 0.15)',
+                          color: '#38BDF8'
                         }}
                       >
                         {item.suggested_type || 'Idea'}
@@ -251,7 +251,7 @@ export default function InboxTriageModal({ isOpen, onClose, onRefreshData }) {
                       disabled={processingId === item.id}
                       title="Promote to Goal"
                     >
-                      <Target size={12} color="#F472B6" />
+                      <Target size={12} color="#34D399" />
                       <span>Goal</span>
                     </button>
 

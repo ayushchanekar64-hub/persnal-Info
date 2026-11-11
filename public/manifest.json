@@ -4,8 +4,8 @@
   "description": "Executive Personal Operating System, Code Studio, and Intelligence Workspace.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0B0C10",
-  "theme_color": "#7C3AED",
+  "background_color": "#0B0E14",
+  "theme_color": "#0B0E14",
   "orientation": "portrait-primary",
   "icons": [
     {

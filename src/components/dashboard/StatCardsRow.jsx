@@ -33,7 +33,7 @@ export default React.memo(function StatCardsRow({ stats = {}, tasks = [] }) {
       icon: CheckSquare,
       iconBg: 'rgba(99, 102, 241, 0.14)',
       iconColor: '#818CF8',
-      glowColor: 'rgba(99, 102, 241, 0.15)'
+      glowColor: 'rgba(99, 102, 241, 0.14)'
     },
     {
       id: 'goals',
@@ -43,9 +43,9 @@ export default React.memo(function StatCardsRow({ stats = {}, tasks = [] }) {
       badgeSubtext: 'to previous month',
       isPositive: true,
       icon: Target,
-      iconBg: 'rgba(139, 92, 246, 0.14)',
-      iconColor: '#A78BFA',
-      glowColor: 'rgba(139, 92, 246, 0.15)'
+      iconBg: 'rgba(6, 182, 212, 0.14)',
+      iconColor: '#22D3EE',
+      glowColor: 'rgba(6, 182, 212, 0.14)'
     },
     {
       id: 'learning',
@@ -55,9 +55,9 @@ export default React.memo(function StatCardsRow({ stats = {}, tasks = [] }) {
       badgeSubtext: 'to previous week',
       isPositive: true,
       icon: BookOpen,
-      iconBg: 'rgba(59, 130, 246, 0.14)',
-      iconColor: '#60A5FA',
-      glowColor: 'rgba(59, 130, 246, 0.15)'
+      iconBg: 'rgba(56, 189, 248, 0.14)',
+      iconColor: '#38BDF8',
+      glowColor: 'rgba(56, 189, 248, 0.14)'
     },
     {
       id: 'score',
@@ -65,9 +65,9 @@ export default React.memo(function StatCardsRow({ stats = {}, tasks = [] }) {
       value: `${calculatedScore}`,
       subtext: 'Based on a weighted average of the KPIs',
       icon: Award,
-      iconBg: 'rgba(236, 72, 153, 0.14)',
-      iconColor: '#F472B6',
-      glowColor: 'rgba(236, 72, 153, 0.15)'
+      iconBg: 'rgba(16, 185, 129, 0.14)',
+      iconColor: '#34D399',
+      glowColor: 'rgba(16, 185, 129, 0.14)'
     }
   ];
 

@@ -197,7 +197,7 @@ export default function AuthPage({ initialFlow = 'signin', onComplete, onExit })
     if (len < 10 && varieties <= 2) return { time: '~45 seconds', label: 'Weak', color: '#EF4444' };
     if (len < 11 && varieties >= 3) return { time: '~3 weeks', label: 'Moderate', color: '#F59E0B' };
     if (len >= 12 && varieties >= 4) {
-      if (len >= 16) return { time: '> 1,000,000 centuries', label: 'Quantum-Resistant (Military-Grade)', color: '#8B5CF6' };
+      if (len >= 16) return { time: '> 1,000,000 centuries', label: 'Quantum-Resistant (Military-Grade)', color: '#38BDF8' };
       return { time: '~4,500 years', label: 'Ultra Strong', color: '#10B981' };
     }
     if (len >= 8 && varieties >= 3) return { time: '~8 months', label: 'Good', color: '#3B82F6' };
@@ -768,7 +768,7 @@ export default function AuthPage({ initialFlow = 'signin', onComplete, onExit })
               <ShieldCheck size={14} color="#10B981" /> 256-Bit SSL/TLS
             </span>
             <span className="auth-security-badge-item">
-              <Lock size={13} color="#8B5CF6" /> Zero-Knowledge Hash
+              <Lock size={13} color="#818CF8" /> Zero-Knowledge Hash
             </span>
             <span className="auth-security-badge-item">
               <KeyRound size={13} color="#38BDF8" /> 2FA PIN Recovery
@@ -909,7 +909,7 @@ export default function AuthPage({ initialFlow = 'signin', onComplete, onExit })
                             style={{
                               background: 'none',
                               border: 'none',
-                              color: '#C084FC',
+                              color: '#38BDF8',
                               fontSize: '0.78rem',
                               textAlign: 'left',
                               cursor: 'pointer',
@@ -1162,7 +1162,7 @@ export default function AuthPage({ initialFlow = 'signin', onComplete, onExit })
               {step === 4 && (
                 <div className="auth-success-state">
                   <div className="auth-loader-ring">
-                    <ShieldCheck size={28} color="#8B5CF6" />
+                    <ShieldCheck size={28} color="#38BDF8" />
                   </div>
                   <div>
                     <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '0.4rem' }}>
@@ -1282,7 +1282,7 @@ export default function AuthPage({ initialFlow = 'signin', onComplete, onExit })
                             style={{
                               background: 'none',
                               border: 'none',
-                              color: '#C084FC',
+                              color: '#38BDF8',
                               fontSize: '0.78rem',
                               textAlign: 'left',
                               cursor: 'pointer',
@@ -1354,7 +1354,7 @@ export default function AuthPage({ initialFlow = 'signin', onComplete, onExit })
                             style={{
                               background: 'none',
                               border: 'none',
-                              color: '#C084FC',
+                              color: '#38BDF8',
                               fontSize: '0.78rem',
                               textAlign: 'left',
                               cursor: 'pointer',
@@ -1381,7 +1381,7 @@ export default function AuthPage({ initialFlow = 'signin', onComplete, onExit })
                         <label className="auth-input-label" style={{ marginBottom: 0 }}>
                           Master Security Passkey
                         </label>
-                        <span style={{ fontSize: '0.72rem', color: '#8B5CF6', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                        <span style={{ fontSize: '0.72rem', color: '#38BDF8', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
                           <ShieldCheck size={12} /> Invite Only
                         </span>
                       </div>
@@ -1484,9 +1484,9 @@ export default function AuthPage({ initialFlow = 'signin', onComplete, onExit })
                           }}
                           title="Generate high-entropy password suggestions"
                           style={{
-                            background: 'rgba(139, 92, 246, 0.15)',
-                            border: '1px solid rgba(139, 92, 246, 0.4)',
-                            color: '#C084FC',
+                            background: 'rgba(6, 182, 212, 0.14)',
+                            border: '1px solid rgba(56, 189, 248, 0.4)',
+                            color: '#38BDF8',
                             padding: '4px 10px',
                             borderRadius: '6px',
                             fontSize: '0.74rem',
@@ -1538,7 +1538,7 @@ export default function AuthPage({ initialFlow = 'signin', onComplete, onExit })
                         <div className="auth-suggestions-card">
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                             <span style={{ fontSize: '0.78rem', color: '#E2E8F0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '5px' }}>
-                              <Shield size={13} color="#8B5CF6" /> Cryptographic Suggestions (Click to Apply):
+                              <Shield size={13} color="#38BDF8" /> Cryptographic Suggestions (Click to Apply):
                             </span>
                             <button
                               type="button"
@@ -1546,7 +1546,7 @@ export default function AuthPage({ initialFlow = 'signin', onComplete, onExit })
                               style={{
                                 background: 'none',
                                 border: 'none',
-                                color: '#A78BFA',
+                                color: '#38BDF8',
                                 fontSize: '0.72rem',
                                 cursor: 'pointer',
                                 display: 'flex',
@@ -1571,8 +1571,8 @@ export default function AuthPage({ initialFlow = 'signin', onComplete, onExit })
                                 type="button"
                                 onClick={() => applyPasswordSuggestion(sug.value)}
                                 style={{
-                                  background: 'rgba(139, 92, 246, 0.2)',
-                                  border: '1px solid rgba(139, 92, 246, 0.5)',
+                                  background: 'rgba(6, 182, 212, 0.2)',
+                                  border: '1px solid rgba(56, 189, 248, 0.5)',
                                   color: '#FFFFFF',
                                   padding: '5px 10px',
                                   borderRadius: '6px',
@@ -2115,7 +2115,7 @@ export default function AuthPage({ initialFlow = 'signin', onComplete, onExit })
             <div className="auth-feature-list">
               <div className="auth-feature-item">
                 <div className="auth-feature-icon-box">
-                  <Target size={18} color="#A78BFA" />
+                  <Target size={18} color="#38BDF8" />
                 </div>
                 <div>
                   <div className="auth-feature-title">Goals & Priority Execution</div>
@@ -2135,7 +2135,7 @@ export default function AuthPage({ initialFlow = 'signin', onComplete, onExit })
 
               <div className="auth-feature-item">
                 <div className="auth-feature-icon-box">
-                  <BookOpen size={18} color="#C084FC" />
+                  <BookOpen size={18} color="#06B6D4" />
                 </div>
                 <div>
                   <div className="auth-feature-title">Continuous Skill Growth</div>

@@ -581,7 +581,7 @@ export default function CodeStudioPlayground({ onLogProblemSuccess }) {
             className="studio-problem-select"
             value={language}
             onChange={(e) => handleLanguageChange(e.target.value)}
-            style={{ fontWeight: 700, color: '#A78BFA' }}
+            style={{ fontWeight: 700, color: '#38BDF8' }}
           >
             <option value="python">🐍 Python 3</option>
             <option value="cpp">⚡ C++ (G++ 14)</option>
@@ -661,7 +661,7 @@ export default function CodeStudioPlayground({ onLogProblemSuccess }) {
           className={`studio-mobile-tab-btn ${mobileActiveView === 'inspector' ? 'active' : ''}`}
           onClick={() => setMobileActiveView('inspector')}
         >
-          <Zap size={14} color="#A78BFA" />
+          <Zap size={14} color="#38BDF8" />
           <span>Terminal & AI Judge</span>
           {evaluationResult && (
             <span style={{
@@ -701,7 +701,7 @@ export default function CodeStudioPlayground({ onLogProblemSuccess }) {
 
           <div className="studio-editor-statusbar">
             <span>Press <kbd style={{ padding: '0.1rem 0.35rem', borderRadius: 3, background: 'rgba(255,255,255,0.1)' }}>Ctrl+Enter</kbd> to Run & Evaluate</span>
-            <span style={{ fontWeight: 600, color: '#A78BFA' }}>
+            <span style={{ fontWeight: 600, color: '#38BDF8' }}>
               {language.toUpperCase()} • Native Subprocess Sandbox
             </span>
           </div>
@@ -724,7 +724,7 @@ export default function CodeStudioPlayground({ onLogProblemSuccess }) {
               className={`inspector-tab-btn ${activeInspectorTab === 'judge' ? 'active' : ''}`}
               onClick={() => setActiveInspectorTab('judge')}
             >
-              <BrainCircuit size={14} color="#A78BFA" />
+              <BrainCircuit size={14} color="#38BDF8" />
               <span>AI Judge</span>
               {evaluationResult?.status === 'logic_error' && (
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#F59E0B' }} />
@@ -797,7 +797,7 @@ export default function CodeStudioPlayground({ onLogProblemSuccess }) {
             {activeInspectorTab === 'judge' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 {isEvaluating ? (
-                  <div style={{ textAlign: 'center', padding: '2rem 1rem', color: '#A78BFA' }}>
+                  <div style={{ textAlign: 'center', padding: '2rem 1rem', color: '#38BDF8' }}>
                     <Sparkles size={24} style={{ animation: 'spin 2s linear infinite', marginBottom: '0.5rem' }} />
                     <p style={{ fontSize: '0.85rem', fontWeight: 600 }}>Evaluating your code correctness...</p>
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>

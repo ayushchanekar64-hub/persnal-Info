@@ -15,7 +15,9 @@
   width: 100vw;
   height: 100vh;
   z-index: 99999;
-  background-color: #000000;
+  background-color: #0B0E14;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+  background-size: 22px 22px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -35,7 +37,7 @@
   pointer-events: none;
 }
 
-/* Subtle Refined Purple Backlight (Never Overpowers or Clouds the Text) */
+/* Subtle Refined Cyan/Indigo Backlight (Never Overpowers or Clouds the Text) */
 .welcome-hero-ambient-glow {
   position: absolute;
   top: 48%;
@@ -45,8 +47,8 @@
   height: 280px;
   background: radial-gradient(
     ellipse at center,
-    rgba(147, 51, 234, 0.14) 0%,
-    rgba(99, 102, 241, 0.05) 50%,
+    rgba(6, 182, 212, 0.14) 0%,
+    rgba(99, 102, 241, 0.06) 50%,
     transparent 72%
   );
   pointer-events: none;
@@ -72,13 +74,13 @@
 .welcome-logo-badge {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, #1f083a 0%, #0d031a 100%);
-  border: 1.5px solid rgba(168, 85, 247, 0.7);
+  background: linear-gradient(135deg, #131B2E 0%, #080A0F 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.65);
   border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 16px rgba(168, 85, 247, 0.4), inset 0 0 8px rgba(168, 85, 247, 0.2);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.35), inset 0 0 8px rgba(99, 102, 241, 0.2);
 }
 
 .logo-letter {
@@ -255,10 +257,10 @@
   }
 }
 
-/* 2. User Name in Elegant Purple → Indigo Gradient */
+/* 2. User Name in Crisp Silver -> Cyan -> Indigo Gradient */
 .welcome-name-gradient {
   display: inline-block;
-  background: linear-gradient(135deg, #E9D5FF 0%, #C084FC 32%, #A855F7 68%, #818CF8 100%);
+  background: linear-gradient(135deg, #F8FAFC 0%, #38BDF8 38%, #06B6D4 68%, #6366F1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   opacity: 0;
@@ -338,9 +340,9 @@
 }
 
 .highlight-personal-os {
-  color: #C084FC;
+  color: #38BDF8;
   font-weight: 700;
-  text-shadow: 0 0 16px rgba(192, 132, 252, 0.5);
+  text-shadow: 0 0 16px rgba(56, 189, 248, 0.45);
 }
 
 /* ==========================================================================
@@ -377,7 +379,7 @@
 }
 
 .pillar-icon {
-  color: #C084FC;
+  color: #38BDF8;
   flex-shrink: 0;
 }
 

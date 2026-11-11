@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Calendar,
   Share2,
@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import DashboardDateRangePicker from './DashboardDateRangePicker';
 
-export default function ExecutiveSummaryBar({
+function ExecutiveSummaryBar({
   user,
   stats = {},
   fromDate = '',
@@ -28,27 +28,25 @@ export default function ExecutiveSummaryBar({
   const [justSynced, setJustSynced] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Month list from January to Current Month dynamically
-  const allMonths = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
-
-  const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonthIdx = now.getMonth(); // 0 to 11
-
-  // Dynamically slice up to current month (e.g. Jan..Sep)
-  const monthOptions = allMonths.slice(0, currentMonthIdx + 1).map((name, index) => {
-    const monthNum = String(index + 1).padStart(2, '0');
-    return {
-      label: name,
-      shortLabel: name.slice(0, 3),
-      yearMonth: `${currentYear}-${monthNum}`,
-      index,
-      isCurrent: index === currentMonthIdx
-    };
-  });
+  const monthOptions = useMemo(() => {
+    const allMonths = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonthIdx = now.getMonth();
+    return allMonths.slice(0, currentMonthIdx + 1).map((name, index) => {
+      const monthNum = String(index + 1).padStart(2, '0');
+      return {
+        label: name,
+        shortLabel: name.slice(0, 3),
+        yearMonth: `${currentYear}-${monthNum}`,
+        index,
+        isCurrent: index === currentMonthIdx
+      };
+    });
+  }, []);
 
   const [selectedMonth, setSelectedMonth] = useState('All Months');
 
@@ -241,3 +239,5 @@ export default function ExecutiveSummaryBar({
     </div>
   );
 }
+
+export default React.memo(ExecutiveSummaryBar);

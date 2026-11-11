@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Zap, BarChart3, Brain, Target, ChevronDown } from 'lucide-react';
 import LiveWaveCanvas from './LiveWaveCanvas';
 import '../../styles/welcome.css';
@@ -6,22 +6,27 @@ import '../../styles/welcome.css';
 export default function WelcomeScreen({ user, onTransitionStart, onFinish }) {
   const [dissolving, setDissolving] = useState(false);
   const [visible, setVisible] = useState(true);
+  const dissolvingRef = useRef(false);
 
-  const handleDismiss = () => {
-    if (dissolving) return;
+  const handleDismiss = useCallback(() => {
+    if (dissolvingRef.current) return;
+    dissolvingRef.current = true;
     setDissolving(true);
+    try {
+      sessionStorage.setItem('mindos_welcomed', '1');
+    } catch {}
     if (onTransitionStart) onTransitionStart();
     setTimeout(() => {
       setVisible(false);
       if (onFinish) onFinish();
-    }, 650);
-  };
+    }, 360);
+  }, [onTransitionStart, onFinish]);
 
   useEffect(() => {
-    // 3.6s: Sequences conclude, initiate seamless cinematic dissolve into dashboard
+    // 1.8s snappy reveal then seamless dissolve into dashboard
     const autoTimer = setTimeout(() => {
       handleDismiss();
-    }, 3600);
+    }, 1800);
 
     const handleWheel = (e) => {
       if (Math.abs(e.deltaY) > 15) {
@@ -35,7 +40,7 @@ export default function WelcomeScreen({ user, onTransitionStart, onFinish }) {
       clearTimeout(autoTimer);
       window.removeEventListener('wheel', handleWheel);
     };
-  }, [dissolving]);
+  }, [handleDismiss]);
 
   if (!visible) return null;
 

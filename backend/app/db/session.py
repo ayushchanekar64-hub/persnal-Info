@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+from sqlalchemy import text, event
 from backend.app.core.config import settings
 from backend.app.db.base import Base
 
@@ -20,6 +21,21 @@ def get_normalized_db_url(url: str) -> str:
         return url.replace("postgresql://", "postgresql+asyncpg://", 1)
     return url
 
+
+def _configure_sqlite_pragmas(db_engine):
+    if "sqlite" not in str(db_engine.url):
+        return
+
+    @event.listens_for(db_engine.sync_engine, "connect")
+    def set_sqlite_pragma(dbapi_connection, connection_record):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA journal_mode=WAL")
+        cursor.execute("PRAGMA synchronous=NORMAL")
+        cursor.execute("PRAGMA temp_store=MEMORY")
+        cursor.execute("PRAGMA cache_size=-16000")
+        cursor.close()
+
+
 # Primary Engine
 primary_db_url = get_normalized_db_url(settings.DATABASE_URL)
 try:
@@ -32,6 +48,7 @@ try:
         pool_pre_ping=True,
         connect_args=connect_args
     )
+    _configure_sqlite_pragmas(engine)
 except Exception as e:
     logger.warning(f"Failed to create primary engine with {primary_db_url}: {e}")
     engine = create_async_engine(
@@ -39,6 +56,7 @@ except Exception as e:
         echo=False,
         future=True,
     )
+    _configure_sqlite_pragmas(engine)
 
 AsyncSessionLocal = async_sessionmaker(
     bind=engine,
@@ -61,7 +79,12 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
             await session.close()
 
 
-from sqlalchemy import text
+async def _apply_sqlite_tuning(conn):
+    if "sqlite" in str(conn.engine.url):
+        await conn.execute(text("PRAGMA journal_mode=WAL"))
+        await conn.execute(text("PRAGMA synchronous=NORMAL"))
+        await conn.execute(text("PRAGMA temp_store=MEMORY"))
+
 
 async def _auto_migrate(conn):
     is_postgres = "postgres" in str(conn.engine.url)
@@ -103,6 +126,7 @@ async def init_db():
     # Test connection and initialize tables
     try:
         async with engine.begin() as conn:
+            await _apply_sqlite_tuning(conn)
             await conn.run_sync(Base.metadata.create_all)
             await _auto_migrate(conn)
         logger.info("Database initialized successfully with primary engine.")
@@ -115,6 +139,7 @@ async def init_db():
             echo=False,
             future=True,
         )
+        _configure_sqlite_pragmas(engine)
         AsyncSessionLocal = async_sessionmaker(
             bind=engine,
             class_=AsyncSession,
@@ -123,7 +148,7 @@ async def init_db():
             expire_on_commit=False,
         )
         async with engine.begin() as conn:
+            await _apply_sqlite_tuning(conn)
             await conn.run_sync(Base.metadata.create_all)
             await _auto_migrate(conn)
         logger.info("Fallback database initialized successfully.")
-

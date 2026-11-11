@@ -1,33 +1,42 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense } from 'react';
 import Sidebar from './components/layout/Sidebar';
 import Header from './components/layout/Header';
 import ExecutiveSummaryBar from './components/dashboard/ExecutiveSummaryBar';
 import StatCardsRow from './components/dashboard/StatCardsRow';
 import LearningAndCoding from './components/dashboard/LearningAndCoding';
 import AnalyticsPreview from './components/dashboard/AnalyticsPreview';
-import CreateScreen from './components/create/CreateScreen';
-import AuthPage from './components/auth/AuthPage';
-import ConfigureRecoveryPinModal from './components/auth/ConfigureRecoveryPinModal';
 import WelcomeScreen from './components/common/WelcomeScreen';
 import MobileBottomNav from './components/layout/MobileBottomNav';
-
-// Secondary views
-import TasksView from './components/views/TasksView';
-import GoalsView from './components/views/GoalsView';
-import HabitsView from './components/views/HabitsView';
-import NotesView from './components/views/NotesView';
-import LearningView from './components/views/LearningView';
-import CodingView from './components/views/CodingView';
-import CareerView from './components/views/CareerView';
-import FinanceView from './components/views/FinanceView';
-import AnalyticsView from './components/views/AnalyticsView';
-import AIAssistantView from './components/views/AIAssistantView';
-import SettingsView from './components/views/SettingsView';
-import ProfileView from './components/views/ProfileView';
-import FamilyView from './components/views/FamilyView';
-import QuickCaptureHUD from './components/inbox/QuickCaptureHUD';
-import InboxTriageModal from './components/inbox/InboxTriageModal';
 import { Sparkles, CheckCircle2 } from 'lucide-react';
+
+// Lazy-loaded secondary views, creation screens & overlays for fast initial startup
+const CreateScreen = lazy(() => import('./components/create/CreateScreen'));
+const AuthPage = lazy(() => import('./components/auth/AuthPage'));
+const ConfigureRecoveryPinModal = lazy(() => import('./components/auth/ConfigureRecoveryPinModal'));
+const TasksView = lazy(() => import('./components/views/TasksView'));
+const GoalsView = lazy(() => import('./components/views/GoalsView'));
+const HabitsView = lazy(() => import('./components/views/HabitsView'));
+const NotesView = lazy(() => import('./components/views/NotesView'));
+const LearningView = lazy(() => import('./components/views/LearningView'));
+const CodingView = lazy(() => import('./components/views/CodingView'));
+const CareerView = lazy(() => import('./components/views/CareerView'));
+const FinanceView = lazy(() => import('./components/views/FinanceView'));
+const AnalyticsView = lazy(() => import('./components/views/AnalyticsView'));
+const AIAssistantView = lazy(() => import('./components/views/AIAssistantView'));
+const SettingsView = lazy(() => import('./components/views/SettingsView'));
+const ProfileView = lazy(() => import('./components/views/ProfileView'));
+const FamilyView = lazy(() => import('./components/views/FamilyView'));
+const QuickCaptureHUD = lazy(() => import('./components/inbox/QuickCaptureHUD'));
+const InboxTriageModal = lazy(() => import('./components/inbox/InboxTriageModal'));
+
+function ViewLoadingFallback() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '260px', color: 'var(--text-tertiary)', fontSize: '0.88rem', gap: '0.6rem' }}>
+      <div style={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid rgba(139, 92, 246, 0.25)', borderTopColor: '#8B5CF6', animation: 'dashboardSpin 0.75s linear infinite' }} />
+      <span>Loading workspace view...</span>
+    </div>
+  );
+}
 
 import { useAuth } from './context/AuthContext';
 import { api } from './services/api';
@@ -45,9 +54,14 @@ export default function App() {
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('mindos_theme') || localStorage.getItem('ayora_theme') || localStorage.getItem('mynexus_theme') || 'dark';
   });
-  const [searchQuery, setSearchQuery] = useState('');
   const [createScreen, setCreateScreen] = useState(null); // { type, returnTab, initialData }
-  const [showWelcome, setShowWelcome] = useState(true);
+  const [showWelcome, setShowWelcome] = useState(() => {
+    try {
+      return sessionStorage.getItem('mindos_welcomed') !== '1';
+    } catch {
+      return false;
+    }
+  });
   const [welcomeDissolving, setWelcomeDissolving] = useState(false);
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
   const [showPinPrompt, setShowPinPrompt] = useState(true);
@@ -55,6 +69,8 @@ export default function App() {
   const [isHudOpen, setIsHudOpen] = useState(false);
   const [isTriageOpen, setIsTriageOpen] = useState(false);
   const [inboxToast, setInboxToast] = useState(null);
+  const userRef = useRef(user);
+  userRef.current = user;
 
   // Frictionless Global Hotkey Listener: Alt + C or Ctrl + Space
   useEffect(() => {
@@ -154,7 +170,8 @@ export default function App() {
 
   // Load user data from PostgreSQL / Backend API
   const loadUserData = useCallback(async () => {
-    if (!user) {
+    const activeUser = userRef.current;
+    if (!activeUser) {
       setData(initialData);
       return;
     }
@@ -321,7 +338,7 @@ export default function App() {
       const aiBrief = briefRes.status === 'fulfilled' ? briefRes.value : initialData.aiBrief;
 
       setData({
-        user,
+        user: activeUser,
         stats,
         tasks,
         goals,
@@ -341,31 +358,21 @@ export default function App() {
     } catch (err) {
       console.error('Failed to load user workspace data:', err);
     }
-  }, [user]);
+  }, [user?.id]);
 
-  // Re-fetch on user login/logout or auth changes
+  // Fetch once on user session initialization, login (_loginTs), or clear on logout
   useEffect(() => {
-    if (user) {
+    if (user?.id) {
       loadUserData();
+    } else {
+      setData(initialData);
     }
   }, [user?._loginTs, user?.id, loadUserData]);
 
-  useEffect(() => {
-    const handleAuthChange = (e) => {
-      if (e.detail?.user) {
-        loadUserData();
-      } else {
-        setData(initialData);
-      }
-    };
-    window.addEventListener('mindos:auth-change', handleAuthChange);
-    return () => window.removeEventListener('mindos:auth-change', handleAuthChange);
-  }, [loadUserData]);
-
-  // Handle task completion toggle with backend persistence
-  const handleToggleTask = async (taskId) => {
-    if (!user) {
-      setAuthModalOpen(true);
+  // Handle task completion toggle with optimistic backend persistence (avoids 9-endpoint storm)
+  const handleToggleTask = useCallback(async (taskId) => {
+    if (!userRef.current) {
+      openAuth('signin');
       return;
     }
 
@@ -380,6 +387,13 @@ export default function App() {
       return {
         ...prev,
         tasks: updatedTasks,
+        upcoming: updatedTasks.filter((t) => !t.completed).map((t) => ({
+          id: t.id,
+          title: t.title,
+          type: t.category,
+          date: t.due,
+          priority: t.priority
+        })),
         stats: {
           ...prev.stats,
           tasksCompleted: isNowCompleted ? prev.stats.tasksCompleted + 1 : Math.max(0, prev.stats.tasksCompleted - 1)
@@ -389,37 +403,36 @@ export default function App() {
 
     try {
       await api.tasks.toggle(taskId);
-      loadUserData();
     } catch (err) {
       console.error('Failed to toggle task:', err);
       loadUserData();
     }
-  };
+  }, [openAuth, loadUserData]);
 
   // Open Full-Page Create Screen
-  const handleOpenCreate = (type = 'task', initialData = {}) => {
-    if (!user) {
-      setAuthModalOpen(true);
+  const handleOpenCreate = useCallback((type = 'task', init = {}) => {
+    if (!userRef.current) {
+      openAuth('signin');
       return;
     }
 
-    const formattedInitialData = typeof initialData === 'string'
-      ? { title: initialData, name: initialData, skill: initialData }
-      : initialData?.label
-        ? { title: initialData.label, name: initialData.label, skill: initialData.label, ...initialData }
-        : initialData;
+    const formattedInitialData = typeof init === 'string'
+      ? { title: init, name: init, skill: init }
+      : init?.label
+        ? { title: init.label, name: init.label, skill: init.label, ...init }
+        : init;
 
-    setCreateScreen({
+    setCreateScreen((prev) => ({
       type,
       returnTab: activeTab,
       initialData: formattedInitialData
-    });
-  };
+    }));
+  }, [activeTab, openAuth]);
 
   // Centralized Full-Page Creation Handler
-  const handleSaveCreate = async (type, formData) => {
-    if (!user) {
-      setAuthModalOpen(true);
+  const handleSaveCreate = useCallback(async (type, formData) => {
+    if (!userRef.current) {
+      openAuth('signin');
       return;
     }
 
@@ -449,36 +462,72 @@ export default function App() {
     await loadUserData();
 
     // Determine target tab to return to
-    const originTab = createScreen?.returnTab || 'dashboard';
-    const targetTab = originTab === 'dashboard' ? (
-      type === 'task' ? 'tasks' :
-      type === 'goal' ? 'goals' :
-      (type === 'coding' || type === 'coding-session' || type === 'coding-mistake') ? 'coding' :
-      type === 'learning' ? 'learning' :
-      type === 'habit' ? 'habits' :
-      type === 'note' ? 'notes' :
-      type === 'career' ? 'career' :
-      type === 'finance' ? 'finance' : 'dashboard'
-    ) : originTab;
+    setCreateScreen((prevScreen) => {
+      const originTab = prevScreen?.returnTab || 'dashboard';
+      const targetTab = originTab === 'dashboard' ? (
+        type === 'task' ? 'tasks' :
+        type === 'goal' ? 'goals' :
+        (type === 'coding' || type === 'coding-session' || type === 'coding-mistake') ? 'coding' :
+        type === 'learning' ? 'learning' :
+        type === 'habit' ? 'habits' :
+        type === 'note' ? 'notes' :
+        type === 'career' ? 'career' :
+        type === 'finance' ? 'finance' : 'dashboard'
+      ) : originTab;
+      setActiveTab(targetTab);
+      return null;
+    });
+  }, [loadUserData, openAuth]);
 
+  const pendingTaskCount = useMemo(
+    () => data.tasks.filter((t) => !t.completed).length,
+    [data.tasks]
+  );
+
+  // Stabilized UI handlers so memoized children never re-render needlessly
+  const handleSetTab = useCallback((tab) => {
     setCreateScreen(null);
-    setActiveTab(targetTab);
-  };
+    setActiveTab(tab);
+    setIsMobileMenuOpen(false);
+  }, []);
 
-  const pendingTaskCount = data.tasks.filter((t) => !t.completed).length;
+  const handleFromChange = useCallback((from) => setDateRange(prev => ({ ...prev, from })), []);
+  const handleToChange = useCallback((to) => setDateRange(prev => ({ ...prev, to })), []);
+  const handleResetDateRange = useCallback(() => setDateRange({ from: '', to: '' }), []);
+  const handleToggleMobileMenu = useCallback(() => setIsMobileMenuOpen(prev => !prev), []);
+  const handleCloseMobileMenu = useCallback(() => setIsMobileMenuOpen(false), []);
+  const handleOpenMobileMenu = useCallback(() => setIsMobileMenuOpen(true), []);
+  const handleOpenHud = useCallback(() => setIsHudOpen(true), []);
+  const handleCloseHud = useCallback(() => setIsHudOpen(false), []);
+  const handleOpenTriage = useCallback(() => setIsTriageOpen(true), []);
+  const handleCloseTriage = useCallback(() => setIsTriageOpen(false), []);
+  const handleOpenDefaultQuickAction = useCallback((type) => handleOpenCreate(type || 'task'), [handleOpenCreate]);
+  const handleWelcomeTransitionStart = useCallback(() => setWelcomeDissolving(true), []);
+  const handleWelcomeFinish = useCallback(() => {
+    setShowWelcome(false);
+    setWelcomeDissolving(false);
+  }, []);
+  const handleChangeCreateType = useCallback((newType) => {
+    setCreateScreen(prev => ({ ...prev, type: newType }));
+  }, []);
+  const handleCloseCreate = useCallback(() => setCreateScreen(null), []);
+  const handleClosePinPrompt = useCallback(() => setShowPinPrompt(false), []);
+  const handleReviewInboxToast = useCallback(() => {
+    setInboxToast(null);
+    setIsTriageOpen(true);
+  }, []);
 
   // STRICT AUTHENTICATION GATE:
   // Unauthenticated visitors must sign in / register before accessing the personal workspace.
   if (!user || authScreen) {
     return (
-      <AuthPage
-        initialFlow={authScreen || 'signin'}
-        onComplete={() => {
-          setAuthScreen(null);
-          loadUserData();
-        }}
-        onExit={() => setAuthScreen(null)}
-      />
+      <Suspense fallback={<div style={{ minHeight: '100vh', background: '#09090B' }} />}>
+        <AuthPage
+          initialFlow={authScreen || 'signin'}
+          onComplete={() => setAuthScreen(null)}
+          onExit={() => setAuthScreen(null)}
+        />
+      </Suspense>
     );
   }
 
@@ -488,36 +537,29 @@ export default function App() {
       {showWelcome && (
         <WelcomeScreen
           user={user}
-          onTransitionStart={() => setWelcomeDissolving(true)}
-          onFinish={() => {
-            setShowWelcome(false);
-            setWelcomeDissolving(false);
-          }}
+          onTransitionStart={handleWelcomeTransitionStart}
+          onFinish={handleWelcomeFinish}
         />
       )}
 
       {/* 1. LEFT SIDEBAR */}
       <Sidebar
         activeTab={createScreen ? 'create' : activeTab}
-        setActiveTab={(tab) => {
-          setCreateScreen(null);
-          setActiveTab(tab);
-          setIsMobileMenuOpen(false);
-        }}
+        setActiveTab={handleSetTab}
         isCollapsed={isSidebarCollapsed}
         setIsCollapsed={setIsSidebarCollapsed}
         taskCount={pendingTaskCount}
         isMobileOpen={isMobileMenuOpen}
-        onCloseMobile={() => setIsMobileMenuOpen(false)}
-        onOpenHUD={() => setIsHudOpen(true)}
-        onOpenTriage={() => setIsTriageOpen(true)}
+        onCloseMobile={handleCloseMobileMenu}
+        onOpenHUD={handleOpenHud}
+        onOpenTriage={handleOpenTriage}
       />
 
       {/* Mobile Drawer Dimmer Backdrop */}
       {isMobileMenuOpen && (
         <div
           className="sidebar-backdrop"
-          onClick={() => setIsMobileMenuOpen(false)}
+          onClick={handleCloseMobileMenu}
           aria-hidden="true"
         />
       )}
@@ -527,207 +569,210 @@ export default function App() {
         {/* 2. TOP HEADER */}
         <Header
           activeTab={activeTab}
-          setActiveTab={(tab) => {
-            setCreateScreen(null);
-            setActiveTab(tab);
-          }}
+          setActiveTab={handleSetTab}
           theme={theme}
           setTheme={setTheme}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          onOpenQuickAction={(type) => handleOpenCreate(type || 'task')}
-          onToggleMobileMenu={() => setIsMobileMenuOpen(prev => !prev)}
-          onOpenHUD={() => setIsHudOpen(true)}
-          onOpenTriage={() => setIsTriageOpen(true)}
+          onOpenQuickAction={handleOpenDefaultQuickAction}
+          onToggleMobileMenu={handleToggleMobileMenu}
+          onOpenHUD={handleOpenHud}
+          onOpenTriage={handleOpenTriage}
         />
 
         {/* 3. CONTENT AREA */}
         <div className="content-layout">
           <main className="dashboard-center">
-            {/* FULL-PAGE DEDICATED CREATION SCREEN */}
-            {createScreen ? (
-              <CreateScreen
-                type={createScreen.type}
-                setType={(newType) => setCreateScreen(prev => ({ ...prev, type: newType }))}
-                onClose={() => setCreateScreen(null)}
-                returnTab={createScreen.returnTab || activeTab}
-                onSave={handleSaveCreate}
-                goals={data.goals}
-                initialData={createScreen.initialData}
-              />
-            ) : (
-              <>
-                {/* DASHBOARD VIEW (Reference Match) */}
-                {activeTab === 'dashboard' && (
-                  <div className="view-transition-container">
-                    {/* Reference Header: Title + Date Range Pickers + Controls */}
-                    <ExecutiveSummaryBar
-                      user={user}
-                      stats={filteredData.stats}
-                      fromDate={dateRange.from}
-                      toDate={dateRange.to}
-                      onFromChange={(from) => setDateRange(prev => ({ ...prev, from }))}
-                      onToChange={(to) => setDateRange(prev => ({ ...prev, to }))}
-                      onResetDateRange={() => setDateRange({ from: '', to: '' })}
-                      onOpenQuickAction={handleOpenCreate}
-                      onSync={loadUserData}
-                    />
+            <Suspense fallback={<ViewLoadingFallback />}>
+              {/* FULL-PAGE DEDICATED CREATION SCREEN */}
+              {createScreen ? (
+                <CreateScreen
+                  type={createScreen.type}
+                  setType={handleChangeCreateType}
+                  onClose={handleCloseCreate}
+                  returnTab={createScreen.returnTab || activeTab}
+                  onSave={handleSaveCreate}
+                  goals={data.goals}
+                  initialData={createScreen.initialData}
+                />
+              ) : (
+                <>
+                  {/* DASHBOARD VIEW (Reference Match) */}
+                  {activeTab === 'dashboard' && (
+                    <div className="view-transition-container">
+                      {/* Reference Header: Title + Date Range Pickers + Controls */}
+                      <ExecutiveSummaryBar
+                        user={user}
+                        stats={filteredData.stats}
+                        fromDate={dateRange.from}
+                        toDate={dateRange.to}
+                        onFromChange={handleFromChange}
+                        onToChange={handleToChange}
+                        onResetDateRange={handleResetDateRange}
+                        onOpenQuickAction={handleOpenCreate}
+                        onSync={loadUserData}
+                      />
 
-                    {/* Top Row: 2x2 KPI Cards on Left + Striped Bar Chart on Right */}
-                    <div className="dashboard-reference-top-grid">
-                      <StatCardsRow stats={filteredData.stats} tasks={filteredData.tasks} />
-                      <LearningAndCoding
+                      {/* Top Row: 2x2 KPI Cards on Left + Striped Bar Chart on Right */}
+                      <div className="dashboard-reference-top-grid">
+                        <StatCardsRow stats={filteredData.stats} tasks={filteredData.tasks} />
+                        <LearningAndCoding
+                          learning={filteredData.learning}
+                          coding={filteredData.coding}
+                          onOpenQuickAction={handleOpenCreate}
+                        />
+                      </div>
+
+                      {/* Bottom Row: Multi-line Curve Chart on Left + Donut Ring on Right */}
+                      <AnalyticsPreview
+                        tasks={filteredData.tasks}
+                        goals={filteredData.goals}
                         learning={filteredData.learning}
                         coding={filteredData.coding}
+                        stats={filteredData.stats}
+                        weeklyAnalytics={filteredData.weeklyAnalytics}
                         onOpenQuickAction={handleOpenCreate}
+                        onNavigate={handleSetTab}
                       />
                     </div>
+                  )}
 
-                    {/* Bottom Row: Multi-line Curve Chart on Left + Donut Ring on Right */}
-                    <AnalyticsPreview
-                      tasks={filteredData.tasks}
-                      goals={filteredData.goals}
-                      learning={filteredData.learning}
-                      coding={filteredData.coding}
-                      stats={filteredData.stats}
-                      weeklyAnalytics={filteredData.weeklyAnalytics}
+                  {/* INDIVIDUAL SECTION VIEWS */}
+                  {activeTab === 'tasks' && (
+                    <TasksView
+                      tasks={data.tasks}
+                      goals={data.goals}
+                      onToggleTask={handleToggleTask}
                       onOpenQuickAction={handleOpenCreate}
-                      onNavigate={(tab) => setActiveTab(tab)}
+                      onRefreshTasks={loadUserData}
                     />
-                  </div>
-                )}
+                  )}
 
-                {/* INDIVIDUAL SECTION VIEWS */}
-                {activeTab === 'tasks' && (
-                  <TasksView
-                    tasks={data.tasks}
-                    goals={data.goals}
-                    onToggleTask={handleToggleTask}
-                    onOpenQuickAction={handleOpenCreate}
-                    onRefreshTasks={loadUserData}
-                  />
-                )}
+                  {activeTab === 'goals' && (
+                    <GoalsView
+                      goals={data.goals}
+                      onOpenQuickAction={handleOpenCreate}
+                      onRefreshGoals={loadUserData}
+                    />
+                  )}
 
-                {activeTab === 'goals' && (
-                  <GoalsView
-                    goals={data.goals}
-                    onOpenQuickAction={handleOpenCreate}
-                    onRefreshGoals={loadUserData}
-                  />
-                )}
+                  {activeTab === 'habits' && (
+                    <HabitsView onOpenQuickAction={handleOpenCreate} />
+                  )}
 
-                {activeTab === 'habits' && (
-                  <HabitsView onOpenQuickAction={handleOpenCreate} />
-                )}
+                  {activeTab === 'notes' && (
+                    <NotesView onOpenQuickAction={handleOpenCreate} />
+                  )}
 
-                {activeTab === 'notes' && (
-                  <NotesView onOpenQuickAction={handleOpenCreate} />
-                )}
+                  {activeTab === 'learning' && (
+                    <LearningView
+                      learning={data.learning}
+                      onOpenQuickAction={handleOpenCreate}
+                    />
+                  )}
 
-                {activeTab === 'learning' && (
-                  <LearningView
-                    learning={data.learning}
-                    onOpenQuickAction={handleOpenCreate}
-                  />
-                )}
+                  {activeTab === 'coding' && (
+                    <CodingView
+                      coding={data.coding}
+                      onOpenQuickAction={handleOpenCreate}
+                      onRefreshCoding={loadUserData}
+                    />
+                  )}
 
-                {activeTab === 'coding' && (
-                  <CodingView
-                    coding={data.coding}
-                    onOpenQuickAction={handleOpenCreate}
-                    onRefreshCoding={loadUserData}
-                  />
-                )}
+                  {activeTab === 'career' && (
+                    <CareerView onOpenQuickAction={handleOpenCreate} />
+                  )}
 
-                {activeTab === 'career' && (
-                  <CareerView onOpenQuickAction={handleOpenCreate} />
-                )}
+                  {activeTab === 'finance' && (
+                    <FinanceView onOpenQuickAction={handleOpenCreate} />
+                  )}
 
-                {activeTab === 'finance' && (
-                  <FinanceView onOpenQuickAction={handleOpenCreate} />
-                )}
+                  {activeTab === 'analytics' && (
+                    <AnalyticsView weeklyData={data.weeklyAnalytics} />
+                  )}
 
-                {activeTab === 'analytics' && (
-                  <AnalyticsView weeklyData={data.weeklyAnalytics} />
-                )}
+                  {activeTab === 'ai-assistant' && (
+                    <AIAssistantView
+                      user={user}
+                      tasks={data.tasks}
+                      goals={data.goals}
+                      stats={data.stats}
+                    />
+                  )}
 
-                {activeTab === 'ai-assistant' && (
-                  <AIAssistantView
-                    user={user}
-                    tasks={data.tasks}
-                    goals={data.goals}
-                    stats={data.stats}
-                  />
-                )}
+                  {activeTab === 'profile' && (
+                    <ProfileView
+                      user={user}
+                      onOpenQuickAction={handleOpenCreate}
+                      onNavigate={handleSetTab}
+                    />
+                  )}
 
-                {activeTab === 'profile' && (
-                  <ProfileView
-                    user={user}
-                    onOpenQuickAction={handleOpenCreate}
-                    onNavigate={(tab) => setActiveTab(tab)}
-                  />
-                )}
+                  {activeTab === 'family' && (
+                    <FamilyView
+                      user={user}
+                      onNavigate={handleSetTab}
+                    />
+                  )}
 
-                {activeTab === 'family' && (
-                  <FamilyView
-                    user={user}
-                    onNavigate={(tab) => setActiveTab(tab)}
-                  />
-                )}
-
-                {activeTab === 'settings' && (
-                  <SettingsView
-                    user={user}
-                    theme={theme}
-                    setTheme={setTheme}
-                  />
-                )}
-              </>
-            )}
+                  {activeTab === 'settings' && (
+                    <SettingsView
+                      user={user}
+                      theme={theme}
+                      setTheme={setTheme}
+                    />
+                  )}
+                </>
+              )}
+            </Suspense>
           </main>
         </div>
       </div>
 
       {/* RECOVERY PIN PROMPT MODAL FOR ACCOUNTS MISSING A RECOVERY PIN */}
-      {user && !user.has_recovery_pin && (
-        <ConfigureRecoveryPinModal
-          isOpen={showPinPrompt}
-          onClose={() => setShowPinPrompt(false)}
-        />
+      {user && !user.has_recovery_pin && showPinPrompt && (
+        <Suspense fallback={null}>
+          <ConfigureRecoveryPinModal
+            isOpen={showPinPrompt}
+            onClose={handleClosePinPrompt}
+          />
+        </Suspense>
       )}
 
       {/* MOBILE BOTTOM NAVIGATION BAR */}
       <MobileBottomNav
         activeTab={createScreen ? 'create' : activeTab}
-        setActiveTab={(tab) => {
-          setCreateScreen(null);
-          setActiveTab(tab);
-          setIsMobileMenuOpen(false);
-        }}
+        setActiveTab={handleSetTab}
         taskCount={pendingTaskCount}
-        onOpenMenu={() => setIsMobileMenuOpen(true)}
+        onOpenMenu={handleOpenMobileMenu}
       />
 
       {/* QUICK CAPTURE HUD & TRIAGE MODAL */}
-      <QuickCaptureHUD
-        isOpen={isHudOpen}
-        onClose={() => setIsHudOpen(false)}
-        onThoughtCaptured={handleThoughtCaptured}
-        onOpenTriage={() => setIsTriageOpen(true)}
-      />
+      {isHudOpen && (
+        <Suspense fallback={null}>
+          <QuickCaptureHUD
+            isOpen={isHudOpen}
+            onClose={handleCloseHud}
+            onThoughtCaptured={handleThoughtCaptured}
+            onOpenTriage={handleOpenTriage}
+          />
+        </Suspense>
+      )}
 
-      <InboxTriageModal
-        isOpen={isTriageOpen}
-        onClose={() => setIsTriageOpen(false)}
-        onRefreshData={loadUserData}
-      />
+      {isTriageOpen && (
+        <Suspense fallback={null}>
+          <InboxTriageModal
+            isOpen={isTriageOpen}
+            onClose={handleCloseTriage}
+            onRefreshData={loadUserData}
+          />
+        </Suspense>
+      )}
 
       {/* FLOATING QUICK DUMP PILL (Bottom Right - Accessible from other tabs, hidden on AI Assistant chat to prevent blocking Send button) */}
       {activeTab !== 'ai-assistant' && (
         <button
           type="button"
           className="frictionless-floating-pill"
-          onClick={() => setIsHudOpen(true)}
+          onClick={handleOpenHud}
           title="Dump Idea / Task (Alt + C)"
         >
           <Sparkles size={16} />
@@ -744,10 +789,7 @@ export default function App() {
           <button
             type="button"
             className="inbox-toast-triage-link"
-            onClick={() => {
-              setInboxToast(null);
-              setIsTriageOpen(true);
-            }}
+            onClick={handleReviewInboxToast}
           >
             Review Inbox →
           </button>

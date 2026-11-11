@@ -168,7 +168,7 @@
   flex-direction: column;
   gap: 1.4rem;
   width: 100%;
-  animation: fadeInUp 0.32s var(--ease-spring) both;
+  animation: fadeInUp 0.18s var(--ease-out) both;
 }
 
 /* ===================================================
@@ -181,7 +181,6 @@
               box-shadow var(--dur-fast) var(--ease-out),
               border-color var(--dur-fast) var(--ease-out),
               background-color var(--dur-normal) var(--ease-out);
-  will-change: transform, box-shadow;
 }
 
 .motion-card:hover {
@@ -201,7 +200,6 @@
               border-color var(--dur-fast) var(--ease-out),
               box-shadow var(--dur-fast) var(--ease-out),
               color var(--dur-fast) var(--ease-out) !important;
-  will-change: transform;
 }
 
 .btn:active {
@@ -225,7 +223,11 @@
 
 /* Nav Item Micro-animations */
 .nav-item-btn {
-  transition: all var(--dur-fast) var(--ease-out) !important;
+  transition: transform var(--dur-fast) var(--ease-out),
+              background-color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out),
+              color var(--dur-fast) var(--ease-out),
+              box-shadow var(--dur-fast) var(--ease-out) !important;
 }
 
 .nav-item-btn:hover .nav-icon {
@@ -263,7 +265,7 @@
 
 /* Live Badge Pulse */
 .notif-badge-indicator {
-  animation: pulseGlow 2.4s infinite ease-in-out;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.35);
 }
 
 /* Interactive Filter & Prompt Chips */
@@ -293,8 +295,6 @@
 .popover-menu {
   animation: popIn var(--dur-fast) var(--ease-spring) both;
   transform-origin: top right;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
 }
 
 /* ===================================================

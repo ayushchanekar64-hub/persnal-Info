@@ -15,7 +15,7 @@ import {
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-export default function AnalyticsPreview({
+function AnalyticsPreview({
   tasks = [],
   goals = [],
   learning = {},
@@ -26,25 +26,36 @@ export default function AnalyticsPreview({
   onNavigate
 }) {
   // Current month index as default active month (e.g., Sep = 8)
-  const currentMonthIdx = new Date().getMonth();
+  const currentMonthIdx = useMemo(() => new Date().getMonth(), []);
   const [activeMonthIdx, setActiveMonthIdx] = useState(currentMonthIdx);
 
   // ----------------------------------------------------
   // 1. PRODUCTIVITY & EXECUTION METRICS
   // ----------------------------------------------------
-  const totalTasks = tasks.length;
-  const completedTasks = tasks.filter(t => t.completed).length;
-  const pendingTasks = tasks.filter(t => !t.completed).length;
-  const now = new Date();
-  const overdueTasks = tasks.filter(t => {
-    if (t.completed || !t.due) return false;
-    try {
-      const dueDate = new Date(t.due);
-      return !isNaN(dueDate.getTime()) && dueDate < now;
-    } catch {
-      return false;
+  const { totalTasks, completedTasks, pendingTasks, overdueTasks } = useMemo(() => {
+    const now = new Date();
+    let completed = 0;
+    let overdue = 0;
+    for (let i = 0; i < tasks.length; i++) {
+      const t = tasks[i];
+      if (t.completed) {
+        completed++;
+      } else if (t.due) {
+        try {
+          const dueDate = new Date(t.due);
+          if (!isNaN(dueDate.getTime()) && dueDate < now) {
+            overdue++;
+          }
+        } catch {}
+      }
     }
-  }).length;
+    return {
+      totalTasks: tasks.length,
+      completedTasks: completed,
+      pendingTasks: tasks.length - completed,
+      overdueTasks: overdue
+    };
+  }, [tasks]);
 
   const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
   const learningHours = stats.learningHours || learning.weeklyHours || 0;
@@ -592,4 +603,6 @@ export default function AnalyticsPreview({
     </div>
   );
 }
+
+export default React.memo(AnalyticsPreview);
 

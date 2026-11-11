@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from backend.app.core.config import settings
 from backend.app.db.session import init_db
 from backend.app.api.v1.api import api_router
@@ -26,6 +27,9 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     lifespan=lifespan,
 )
+
+# GZip compression for large JSON & base64 document responses
+app.add_middleware(GZipMiddleware, minimum_size=500)
 
 # CORS configuration
 app.add_middleware(

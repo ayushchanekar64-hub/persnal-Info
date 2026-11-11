@@ -1,7 +1,7 @@
 import React from 'react';
 import { LayoutDashboard, CheckSquare, Target, Repeat, Menu } from 'lucide-react';
 
-export default function MobileBottomNav({
+export default React.memo(function MobileBottomNav({
   activeTab,
   setActiveTab,
   taskCount = 0,
@@ -52,4 +52,4 @@ export default function MobileBottomNav({
       </button>
     </nav>
   );
-}
+});

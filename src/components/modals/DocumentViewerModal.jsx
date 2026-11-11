@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import {
   X,
@@ -117,8 +117,29 @@ export default function DocumentViewerModal({
 }) {
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [isMousePanning, setIsMousePanning] = useState(false);
   const [blobUrl, setBlobUrl] = useState(null);
   const [isDownloading, setIsDownloading] = useState(false);
+
+  const imgContainerRef = useRef(null);
+  const panRef = useRef({ x: 0, y: 0 });
+  const zoomRef = useRef(1);
+  panRef.current = pan;
+  zoomRef.current = zoom;
+
+  const gestureRef = useRef({
+    mode: null,
+    startX: 0,
+    startY: 0,
+    origPanX: 0,
+    origPanY: 0,
+    pinchStartDist: 0,
+    pinchStartZoom: 1,
+    lastTapTime: 0,
+    moved: false
+  });
 
   // Compute navigation indices if documents array is provided
   const currentIndex = useMemo(() => {
@@ -141,11 +162,62 @@ export default function DocumentViewerModal({
     }
   }, [hasNext, onSelectDocument, documents, currentIndex]);
 
-  // Reset zoom & rotation when active document changes
+  const clampPan = useCallback((x, y, z) => {
+    if (z <= 1) return { x: 0, y: 0 };
+    const rect = imgContainerRef.current?.getBoundingClientRect();
+    const maxX = rect ? (rect.width * (z - 1)) / 2 + 80 : 320 * z;
+    const maxY = rect ? (rect.height * (z - 1)) / 2 + 80 : 320 * z;
+    return {
+      x: Math.max(-maxX, Math.min(maxX, x)),
+      y: Math.max(-maxY, Math.min(maxY, y))
+    };
+  }, []);
+
+  const applyZoom = useCallback((updater) => {
+    setZoom((prev) => {
+      const nextRaw = typeof updater === 'function' ? updater(prev) : updater;
+      const next = Math.max(0.5, Math.min(3.5, Math.round(nextRaw * 100) / 100));
+      if (next <= 1) {
+        setPan({ x: 0, y: 0 });
+      } else {
+        setPan((p) => clampPan(p.x, p.y, next));
+      }
+      return next;
+    });
+  }, [clampPan]);
+
+  // Reset zoom, rotation & pan when active document changes
   useEffect(() => {
     setZoom(1);
     setRotation(0);
+    setPan({ x: 0, y: 0 });
   }, [currentDoc?.id]);
+
+  // Desktop mouse drag panning cleanup
+  useEffect(() => {
+    if (!isMousePanning) return;
+
+    const handleWindowMouseMove = (e) => {
+      const g = gestureRef.current;
+      const dx = e.clientX - g.startX;
+      const dy = e.clientY - g.startY;
+      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) g.moved = true;
+      setPan(clampPan(g.origPanX + dx, g.origPanY + dy, zoomRef.current));
+    };
+
+    const handleWindowMouseUp = () => {
+      setIsMousePanning(false);
+      setIsDragging(false);
+      gestureRef.current.mode = null;
+    };
+
+    window.addEventListener('mousemove', handleWindowMouseMove);
+    window.addEventListener('mouseup', handleWindowMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleWindowMouseMove);
+      window.removeEventListener('mouseup', handleWindowMouseUp);
+    };
+  }, [isMousePanning, clampPan]);
 
   // Generate and manage Blob URL for the document
   useEffect(() => {
@@ -208,15 +280,124 @@ export default function DocumentViewerModal({
       } else if (e.key === 'ArrowRight') {
         handleNext();
       } else if (e.key === '+' || e.key === '=') {
-        setZoom(z => Math.min(z + 0.25, 3));
+        applyZoom(z => z + 0.25);
       } else if (e.key === '-') {
-        setZoom(z => Math.max(z - 0.25, 0.5));
+        applyZoom(z => z - 0.25);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose, handlePrev, handleNext]);
+  }, [isOpen, onClose, handlePrev, handleNext, applyZoom]);
+
+  const handleImgTouchStart = (e) => {
+    if (e.target.closest('.doc-viewer-zoom-bar')) return;
+
+    if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      gestureRef.current.mode = 'pinch';
+      gestureRef.current.pinchStartDist = Math.hypot(dx, dy) || 1;
+      gestureRef.current.pinchStartZoom = zoomRef.current;
+      gestureRef.current.moved = true;
+      setIsDragging(true);
+    } else if (e.touches.length === 1) {
+      const t = e.touches[0];
+      gestureRef.current.startX = t.clientX;
+      gestureRef.current.startY = t.clientY;
+      gestureRef.current.origPanX = panRef.current.x;
+      gestureRef.current.origPanY = panRef.current.y;
+      gestureRef.current.moved = false;
+      gestureRef.current.mode = zoomRef.current > 1 ? 'pan' : (documents.length > 1 ? 'swipe' : null);
+      if (gestureRef.current.mode) {
+        setIsDragging(true);
+      }
+    }
+  };
+
+  const handleImgTouchMove = (e) => {
+    const g = gestureRef.current;
+    if (g.mode === 'pinch' && e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.hypot(dx, dy) || 1;
+      const nextZoom = g.pinchStartZoom * (dist / g.pinchStartDist);
+      applyZoom(nextZoom);
+    } else if (g.mode === 'pan' && e.touches.length === 1) {
+      const t = e.touches[0];
+      const dx = t.clientX - g.startX;
+      const dy = t.clientY - g.startY;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) g.moved = true;
+      setPan(clampPan(g.origPanX + dx, g.origPanY + dy, zoomRef.current));
+    } else if (g.mode === 'swipe' && e.touches.length === 1) {
+      const t = e.touches[0];
+      const dx = t.clientX - g.startX;
+      const dy = t.clientY - g.startY;
+      if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) {
+        g.moved = true;
+        setPan({ x: Math.max(-90, Math.min(90, dx * 0.45)), y: 0 });
+      }
+    }
+  };
+
+  const handleImgTouchEnd = (e) => {
+    const g = gestureRef.current;
+
+    if (g.mode === 'pinch' && e.touches.length === 1) {
+      // Transition cleanly from 2-finger pinch to 1-finger pan
+      const t = e.touches[0];
+      g.mode = zoomRef.current > 1 ? 'pan' : null;
+      g.startX = t.clientX;
+      g.startY = t.clientY;
+      g.origPanX = panRef.current.x;
+      g.origPanY = panRef.current.y;
+      return;
+    }
+
+    if (g.mode === 'swipe') {
+      const endX = e.changedTouches[0]?.clientX ?? g.startX;
+      const dx = endX - g.startX;
+      setPan({ x: 0, y: 0 });
+      if (dx < -55 && hasNext) {
+        handleNext();
+      } else if (dx > 55 && hasPrev) {
+        handlePrev();
+      }
+    } else if (!g.moved && g.mode !== 'pinch' && e.changedTouches.length === 1 && !e.target.closest('.doc-viewer-zoom-bar')) {
+      const now = Date.now();
+      if (now - g.lastTapTime < 280) {
+        g.lastTapTime = 0;
+        applyZoom(zoomRef.current > 1 ? 1 : 2);
+      } else {
+        g.lastTapTime = now;
+      }
+    }
+
+    if (e.touches.length === 0) {
+      g.mode = null;
+      setIsDragging(false);
+    }
+  };
+
+  const handleImgMouseDown = (e) => {
+    if (e.button !== 0 || zoomRef.current <= 1) return;
+    if (e.target.closest('.doc-viewer-zoom-bar')) return;
+    e.preventDefault();
+    const g = gestureRef.current;
+    g.mode = 'mouse-pan';
+    g.startX = e.clientX;
+    g.startY = e.clientY;
+    g.origPanX = panRef.current.x;
+    g.origPanY = panRef.current.y;
+    g.moved = false;
+    setIsDragging(true);
+    setIsMousePanning(true);
+  };
+
+  const handleImgDoubleClick = (e) => {
+    if (e.target.closest('.doc-viewer-zoom-bar')) return;
+    applyZoom(zoomRef.current > 1 ? 1 : 2);
+  };
 
   if (!isOpen || !currentDoc) return null;
 
@@ -263,9 +444,17 @@ export default function DocumentViewerModal({
     }
 
     // Default download for non-rotated or non-image
+    let defaultName = baseFileName;
+    if (!/\.[a-zA-Z0-9]{2,5}$/.test(baseFileName)) {
+      const urlStr = currentDoc.file_url || '';
+      if (fileKind === 'pdf' || urlStr.includes('application/pdf')) defaultName = `${baseFileName}.pdf`;
+      else if (urlStr.includes('image/png')) defaultName = `${baseFileName}.png`;
+      else if (urlStr.includes('image/webp')) defaultName = `${baseFileName}.webp`;
+      else if (fileKind === 'image') defaultName = `${baseFileName}.jpg`;
+    }
     const link = document.createElement('a');
     link.href = activeUrl;
-    link.download = baseFileName;
+    link.download = defaultName;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -328,7 +517,7 @@ export default function DocumentViewerModal({
           <div className="doc-viewer-actions">
             {/* Multi-document navigation */}
             {documents.length > 1 && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginRight: '0.5rem' }}>
+              <div className="doc-viewer-action-group doc-viewer-nav-group">
                 <button
                   type="button"
                   className="doc-viewer-nav-btn"
@@ -352,11 +541,11 @@ export default function DocumentViewerModal({
 
             {/* Image zoom controls in header */}
             {fileKind === 'image' && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginRight: '0.5rem' }}>
+              <div className="doc-viewer-action-group doc-viewer-zoom-group">
                 <button
                   type="button"
                   className="doc-viewer-btn icon-only"
-                  onClick={() => setZoom(z => Math.max(z - 0.25, 0.5))}
+                  onClick={() => applyZoom(z => z - 0.25)}
                   title="Zoom Out (-)"
                 >
                   <ZoomOut size={16} />
@@ -364,7 +553,7 @@ export default function DocumentViewerModal({
                 <button
                   type="button"
                   className="doc-viewer-btn icon-only"
-                  onClick={() => setZoom(1)}
+                  onClick={() => applyZoom(1)}
                   title="Reset Zoom"
                 >
                   <Maximize2 size={15} />
@@ -372,7 +561,7 @@ export default function DocumentViewerModal({
                 <button
                   type="button"
                   className="doc-viewer-btn icon-only"
-                  onClick={() => setZoom(z => Math.min(z + 0.25, 3))}
+                  onClick={() => applyZoom(z => z + 0.25)}
                   title="Zoom In (+)"
                 >
                   <ZoomIn size={16} />
@@ -393,7 +582,7 @@ export default function DocumentViewerModal({
               <button
                 type="button"
                 onClick={handleOpenTab}
-                className="doc-viewer-btn"
+                className="doc-viewer-btn open-tab-btn"
                 title={normRot !== 0 ? `Open Rotated (${normRot}°) in new browser tab` : "Open in new browser tab"}
               >
                 <ExternalLink size={15} />
@@ -452,13 +641,23 @@ export default function DocumentViewerModal({
               className="doc-viewer-iframe"
             />
           ) : fileKind === 'image' ? (
-            <div className="doc-viewer-img-container">
+            <div
+              ref={imgContainerRef}
+              className={`doc-viewer-img-container ${zoom > 1 ? 'can-pan' : ''} ${isMousePanning ? 'is-panning' : ''}`}
+              onTouchStart={handleImgTouchStart}
+              onTouchMove={handleImgTouchMove}
+              onTouchEnd={handleImgTouchEnd}
+              onTouchCancel={handleImgTouchEnd}
+              onMouseDown={handleImgMouseDown}
+              onDoubleClick={handleImgDoubleClick}
+            >
               <img
                 src={activeUrl}
                 alt={currentDoc.file_name}
-                className="doc-viewer-img"
+                draggable={false}
+                className={`doc-viewer-img ${isDragging ? 'is-dragging' : ''}`}
                 style={{
-                  transform: `scale(${zoom}) rotate(${rotation}deg)`
+                  transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${zoom}) rotate(${rotation}deg)`
                 }}
               />
               {/* Floating zoom & rotate indicator */}
@@ -466,16 +665,23 @@ export default function DocumentViewerModal({
                 <button
                   type="button"
                   className="doc-viewer-zoom-btn"
-                  onClick={() => setZoom(z => Math.max(z - 0.25, 0.5))}
+                  onClick={() => applyZoom(z => z - 0.25)}
                   title="Zoom Out (-)"
                 >
                   <ZoomOut size={14} />
                 </button>
-                <span className="doc-viewer-zoom-val">{Math.round(zoom * 100)}%</span>
+                <span
+                  className="doc-viewer-zoom-val"
+                  onClick={() => applyZoom(1)}
+                  title="Tap to reset zoom (Double-tap image to zoom)"
+                  style={{ cursor: 'pointer' }}
+                >
+                  {Math.round(zoom * 100)}%
+                </span>
                 <button
                   type="button"
                   className="doc-viewer-zoom-btn"
-                  onClick={() => setZoom(z => Math.min(z + 0.25, 3))}
+                  onClick={() => applyZoom(z => z + 0.25)}
                   title="Zoom In (+)"
                 >
                   <ZoomIn size={14} />
@@ -488,12 +694,12 @@ export default function DocumentViewerModal({
                 >
                   <RotateCw size={14} />
                 </button>
-                {(zoom !== 1 || normRot !== 0) && (
+                {(zoom !== 1 || normRot !== 0 || pan.x !== 0 || pan.y !== 0) && (
                   <button
                     type="button"
                     className="doc-viewer-zoom-btn"
-                    onClick={() => { setZoom(1); setRotation(0); }}
-                    title="Reset Zoom & Rotation"
+                    onClick={() => { setZoom(1); setRotation(0); setPan({ x: 0, y: 0 }); }}
+                    title="Reset Zoom, Pan & Rotation"
                   >
                     <RotateCcw size={14} />
                   </button>

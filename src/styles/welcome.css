@@ -24,17 +24,14 @@
   user-select: none;
   cursor: pointer;
   opacity: 1;
-  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-              filter 0.65s ease-out;
-  will-change: opacity, transform, filter;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Seamless Cinematic Dissolve into Dashboard (No Flash, No Sudden Cut) */
 .cinematic-welcome-overlay.dissolving {
   opacity: 0;
-  transform: scale(1.03);
-  filter: blur(6px);
+  transform: scale(1.02);
   pointer-events: none;
 }
 
@@ -44,17 +41,16 @@
   top: 48%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 520px;
-  height: 240px;
+  width: 560px;
+  height: 280px;
   background: radial-gradient(
     ellipse at center,
-    rgba(147, 51, 234, 0.12) 0%,
-    rgba(99, 102, 241, 0.04) 50%,
+    rgba(147, 51, 234, 0.14) 0%,
+    rgba(99, 102, 241, 0.05) 50%,
     transparent 72%
   );
   pointer-events: none;
   z-index: 2;
-  filter: blur(40px);
 }
 
 /* ==========================================================================
@@ -238,53 +234,46 @@
   max-width: 100%;
 }
 
-/* 1. "Hello" in Soft White / Silver with Smooth Blur-to-Sharp Upward Reveal */
+/* 1. "Hello" in Soft White / Silver */
 .greeting-word-hello {
   color: #F1F5F9;
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.85);
   display: inline-block;
   opacity: 0;
-  transform: translateY(12px);
-  filter: blur(8px);
-  animation: helloEntrance 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+  transform: translateY(10px);
+  animation: helloEntrance 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
 }
 
 @keyframes helloEntrance {
   0% {
     opacity: 0;
-    transform: translateY(12px);
-    filter: blur(8px);
+    transform: translateY(10px);
   }
   100% {
     opacity: 1;
     transform: translateY(0);
-    filter: blur(0);
   }
 }
 
-/* 2. User Name in Elegant Purple → Indigo Gradient with Subtle Refined Glow */
+/* 2. User Name in Elegant Purple → Indigo Gradient */
 .welcome-name-gradient {
   display: inline-block;
   background: linear-gradient(135deg, #E9D5FF 0%, #C084FC 32%, #A855F7 68%, #818CF8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 18px rgba(168, 85, 247, 0.42));
   opacity: 0;
   transform: translateY(10px);
-  filter: blur(10px);
-  animation: nameEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
+  animation: nameEntrance 0.38s cubic-bezier(0.16, 1, 0.3, 1) 0.16s both;
 }
 
 @keyframes nameEntrance {
   0% {
     opacity: 0;
     transform: translateY(10px);
-    filter: blur(10px) drop-shadow(0 0 0 rgba(168, 85, 247, 0));
   }
   100% {
     opacity: 1;
     transform: translateY(0);
-    filter: blur(0px) drop-shadow(0 0 18px rgba(168, 85, 247, 0.42));
   }
 }
 
@@ -296,8 +285,8 @@
   opacity: 0;
   transform-origin: 70% 70%;
   animation: 
-    emojiEntrance 0.48s cubic-bezier(0.2, 0.8, 0.2, 1) 0.62s both,
-    waveHand 2.5s infinite 1.2s;
+    emojiEntrance 0.36s cubic-bezier(0.2, 0.8, 0.2, 1) 0.22s both,
+    waveHand 2.5s infinite 0.7s;
 }
 
 @keyframes emojiEntrance {
@@ -334,20 +323,17 @@
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);
   opacity: 0;
   transform: translateY(8px);
-  filter: blur(6px);
-  animation: subtitleEntrance 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.85s both;
+  animation: subtitleEntrance 0.38s cubic-bezier(0.16, 1, 0.3, 1) 0.28s both;
 }
 
 @keyframes subtitleEntrance {
   0% {
     opacity: 0;
     transform: translateY(8px);
-    filter: blur(6px);
   }
   100% {
     opacity: 1;
     transform: translateY(0);
-    filter: blur(0);
   }
 }
 
@@ -369,7 +355,7 @@
   margin-top: 3.25rem;
   padding: 0.45rem 1.25rem;
   opacity: 0;
-  animation: pillarsEntrance 0.65s cubic-bezier(0.16, 1, 0.3, 1) 1.15s both;
+  animation: pillarsEntrance 0.42s cubic-bezier(0.16, 1, 0.3, 1) 0.38s both;
 }
 
 @keyframes pillarsEntrance {
@@ -393,7 +379,6 @@
 .pillar-icon {
   color: #C084FC;
   flex-shrink: 0;
-  filter: drop-shadow(0 0 6px rgba(192, 132, 252, 0.5));
 }
 
 .pillar-info {

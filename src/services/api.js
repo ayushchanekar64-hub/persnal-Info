@@ -33,9 +33,10 @@ export function setToken(token) {
 
 async function request(endpoint, options = {}) {
   const url = `${API_BASE}${endpoint}`;
+  const { timeoutMs = 15000, ...fetchOptions } = options;
   const headers = {
     'Content-Type': 'application/json',
-    ...(options.headers || {})
+    ...(fetchOptions.headers || {})
   };
 
   const token = getToken();
@@ -43,14 +44,23 @@ async function request(endpoint, options = {}) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
   let response;
   try {
     response = await fetch(url, {
-      ...options,
-      headers
+      ...fetchOptions,
+      headers,
+      signal: fetchOptions.signal || controller.signal
     });
   } catch (netErr) {
+    if (netErr.name === 'AbortError') {
+      throw new ApiError('Request timed out. The server took too long to respond.', 408, null);
+    }
     throw new ApiError('Unable to connect to MIND OS backend service. Please check your network or server connection.', 0, null);
+  } finally {
+    clearTimeout(timeoutId);
   }
 
   if (response.status === 204) {
@@ -486,6 +496,7 @@ export const api = {
     askCopilot: (prompt, context = {}) =>
       request('/ai/copilot', {
         method: 'POST',
+        timeoutMs: 30000,
         body: JSON.stringify({ prompt, context })
       })
   },

@@ -43,7 +43,7 @@
   border: 1px solid var(--border-light);
   border-radius: var(--radius-full);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .date-picker-group:hover,
@@ -95,7 +95,7 @@
   outline: none;
   cursor: pointer;
   color-scheme: inherit;
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .date-input-native:hover {
@@ -128,7 +128,7 @@
   font-size: 0.72rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
   margin-left: 0.2rem;
 }
 
@@ -162,7 +162,7 @@
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
   white-space: nowrap;
 }
 
@@ -229,7 +229,7 @@
   font-size: 0.82rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
 }
 
 .timeframe-dropdown-btn:hover {
@@ -299,7 +299,7 @@
   font-family: inherit;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
 }
 
 .timeframe-opt-btn:hover {
@@ -441,7 +441,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-fast);
+  transition: transform var(--transition-fast), background-color var(--transition-fast);
 }
 
 .kpi-card:hover .kpi-icon-pill {
@@ -582,8 +582,6 @@
   top: -8px;
   transform: translateX(-50%);
   background: rgba(26, 27, 32, 0.96);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-md);
   padding: 0.55rem 0.8rem;
@@ -680,7 +678,7 @@
     rgba(255, 255, 255, 0.045) 4px,
     rgba(255, 255, 255, 0.045) 8px
   );
-  transition: all var(--transition-fast);
+  transition: height var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .striped-bar-column:hover .striped-bar-fill {
@@ -786,8 +784,6 @@
 .curve-chart-tooltip {
   position: absolute;
   background: rgba(26, 27, 32, 0.96);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-md);
   padding: 0.55rem 0.75rem;
@@ -857,7 +853,7 @@
 .curve-tick-btn {
   padding: 0.15rem 0.35rem;
   border-radius: var(--radius-xs);
-  transition: all var(--transition-fast);
+  transition: color var(--transition-fast), background-color var(--transition-fast);
   cursor: pointer;
   user-select: none;
 }
@@ -1059,7 +1055,7 @@
   border-radius: var(--radius-md);
   background: var(--bg-surface-muted);
   border: 1px solid var(--border-light);
-  transition: all var(--transition-fast);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
 }
 
 .priority-item:hover {
@@ -1252,7 +1248,7 @@
   font-size: 0.815rem;
   line-height: 1.4;
   color: var(--text-secondary);
-  transition: all var(--transition-fast);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast), transform var(--transition-fast);
 }
 
 .ai-brief-item:hover {
@@ -1279,7 +1275,7 @@
   border-radius: var(--radius-lg);
   padding: 0.45rem 0.65rem 0.45rem 0.95rem;
   box-shadow: var(--shadow-sm);
-  transition: all var(--transition-fast);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .ai-ask-bar:focus-within {
@@ -1316,7 +1312,7 @@
   font-size: 0.725rem;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
   user-select: none;
   white-space: normal;
   line-height: 1.35;

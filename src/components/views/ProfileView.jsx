@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import {
   User,
@@ -38,47 +38,58 @@ import {
 } from 'lucide-react';
 import DocumentViewerModal from '../modals/DocumentViewerModal';
 import { api } from '../../services/api';
+import { triggerDocumentDownload } from '../../utils/download';
 import '../../styles/profile.css';
+
+const EMPTY_PROFILE_DATA = {
+  basic: null,
+  educations: [],
+  certifications: [],
+  experiences: [],
+  career_preference: null,
+  skills: [],
+  links: null,
+  preferences: null,
+  documents: [],
+  contacts: [],
+  system_profile: {},
+  completion_score: 0,
+  section_completion: {}
+};
+
+// Module cache keyed by user id so switching back to ProfileView renders immediately
+const profileCacheByUser = new Map();
 
 export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
   // Navigation tab within Profile view
   // 'basic' | 'education' | 'career' | 'skills' | 'links' | 'preferences' | 'documents' | 'contacts' | 'system'
   const [activeSection, setActiveSection] = useState('basic');
 
+  const cachedProfile = user?.id ? profileCacheByUser.get(user.id) : null;
+
   // Loading & Error states
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!cachedProfile);
   const [saving, setSaving] = useState(false);
   const [statusMessage, setStatusMessage] = useState(null);
 
   // Full Personal Database State
-  const [profileData, setProfileData] = useState({
-    basic: null,
-    educations: [],
-    certifications: [],
-    experiences: [],
-    career_preference: null,
-    skills: [],
-    links: null,
-    preferences: null,
-    documents: [],
-    contacts: [],
-    system_profile: {},
-    completion_score: 0,
-    section_completion: {}
-  });
+  const [profileData, setProfileData] = useState(() => cachedProfile || EMPTY_PROFILE_DATA);
 
   // Edit Mode states for single-object sections
   const [editingBasic, setEditingBasic] = useState(false);
-  const [basicForm, setBasicForm] = useState({});
+  const [basicForm, setBasicForm] = useState(() => cachedProfile?.basic || {});
 
   const [editingCareer, setEditingCareer] = useState(false);
-  const [careerForm, setCareerForm] = useState({});
+  const [careerForm, setCareerForm] = useState(() => cachedProfile?.career_preference || {});
 
   const [editingLinks, setEditingLinks] = useState(false);
-  const [linksForm, setLinksForm] = useState({});
+  const [linksForm, setLinksForm] = useState(() => cachedProfile?.links || {});
 
   const [editingPreferences, setEditingPreferences] = useState(false);
-  const [preferencesForm, setPreferencesForm] = useState({});
+  const [preferencesForm, setPreferencesForm] = useState(() => cachedProfile?.preferences || {});
+
+  const editingRef = useRef({});
+  editingRef.current = { editingBasic, editingCareer, editingLinks, editingPreferences };
 
   // Modals for array-based items
   const [activeModal, setActiveModal] = useState(null); // 'education' | 'certification' | 'experience' | 'skill' | 'document' | 'contact'
@@ -89,33 +100,39 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
   // -----------------------------------------------------------
   // Load Profile from Backend
   // -----------------------------------------------------------
-  const loadProfile = useCallback(async () => {
+  const loadProfile = useCallback(async ({ silent = false } = {}) => {
     try {
-      setLoading(true);
+      if (!silent) setLoading(true);
       const res = await api.profile.get();
       if (res) {
+        if (user?.id) {
+          profileCacheByUser.set(user.id, res);
+        }
         setProfileData(res);
-        setBasicForm(res.basic || {});
-        setCareerForm(res.career_preference || {});
-        setLinksForm(res.links || {});
-        setPreferencesForm(res.preferences || {});
+        if (!editingRef.current.editingBasic) setBasicForm(res.basic || {});
+        if (!editingRef.current.editingCareer) setCareerForm(res.career_preference || {});
+        if (!editingRef.current.editingLinks) setLinksForm(res.links || {});
+        if (!editingRef.current.editingPreferences) setPreferencesForm(res.preferences || {});
       }
     } catch (err) {
       console.warn('Could not load profile from backend:', err.message);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, [user?.id, user?._loginTs]);
 
   useEffect(() => {
-    loadProfile();
-  }, [loadProfile]);
+    const hasCache = Boolean(user?.id && profileCacheByUser.has(user.id));
+    loadProfile({ silent: hasCache });
+  }, [loadProfile, user?.id]);
 
   useEffect(() => {
     const handleAuthChange = (e) => {
-      if (e.detail?.user) {
-        loadProfile();
+      if (!e.detail?.user) {
+        profileCacheByUser.clear();
+        return;
       }
+      loadProfile({ silent: true });
     };
     window.addEventListener('mindos:auth-change', handleAuthChange);
     return () => window.removeEventListener('mindos:auth-change', handleAuthChange);
@@ -136,8 +153,9 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
       const res = await api.profile.updateBasic(basicForm);
       setProfileData(prev => ({ ...prev, basic: res }));
       setEditingBasic(false);
+      editingRef.current.editingBasic = false;
       showToast('Basic profile details updated successfully');
-      loadProfile();
+      loadProfile({ silent: true });
     } catch (err) {
       showToast(err.message || 'Failed to update basic profile', 'error');
     } finally {
@@ -152,8 +170,9 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
       const res = await api.profile.updateCareer(careerForm);
       setProfileData(prev => ({ ...prev, career_preference: res }));
       setEditingCareer(false);
+      editingRef.current.editingCareer = false;
       showToast('Career preferences updated successfully');
-      loadProfile();
+      loadProfile({ silent: true });
     } catch (err) {
       showToast(err.message || 'Failed to update career preferences', 'error');
     } finally {
@@ -168,8 +187,9 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
       const res = await api.profile.updateLinks(linksForm);
       setProfileData(prev => ({ ...prev, links: res }));
       setEditingLinks(false);
+      editingRef.current.editingLinks = false;
       showToast('Professional links updated successfully');
-      loadProfile();
+      loadProfile({ silent: true });
     } catch (err) {
       showToast(err.message || 'Failed to update professional links', 'error');
     } finally {
@@ -184,8 +204,9 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
       const res = await api.profile.updatePreferences(preferencesForm);
       setProfileData(prev => ({ ...prev, preferences: res }));
       setEditingPreferences(false);
+      editingRef.current.editingPreferences = false;
       showToast('Personal preferences updated successfully');
-      loadProfile();
+      loadProfile({ silent: true });
     } catch (err) {
       showToast(err.message || 'Failed to update preferences', 'error');
     } finally {
@@ -292,7 +313,7 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
         }
       }
       setActiveModal(null);
-      loadProfile();
+      loadProfile({ silent: true });
     } catch (err) {
       showToast(err.message || 'Operation failed', 'error');
     } finally {
@@ -311,7 +332,7 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
       else if (type === 'document') await api.profile.deleteDocument(id);
       else if (type === 'contact') await api.profile.deleteContact(id);
       showToast('Record deleted successfully');
-      loadProfile();
+      loadProfile({ silent: true });
     } catch (err) {
       showToast(err.message || 'Failed to delete record', 'error');
     }
@@ -365,7 +386,7 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
           <div className="profile-avatar-wrapper">
             <div className="profile-avatar-ring">
               {b.profile_photo ? (
-                <img src={b.profile_photo} alt={displayName} className="profile-avatar-img" />
+                <img src={b.profile_photo} alt={displayName} className="profile-avatar-img" decoding="async" />
               ) : (
                 <div className="profile-avatar-initials">
                   <span>{displayName.charAt(0).toUpperCase()}</span>
@@ -472,7 +493,7 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
             <button
               type="button"
               className="profile-btn-hero-secondary"
-              onClick={loadProfile}
+              onClick={() => loadProfile({ silent: false })}
               title="Sync profile data"
               disabled={loading}
             >
@@ -1749,15 +1770,17 @@ export default function ProfileView({ user, onOpenQuickAction, onNavigate }) {
                             <span>Preview</span>
                           </button>
                           {doc.file_url && (
-                            <a
-                              href={doc.file_url}
-                              download={doc.file_name}
+                            <button
+                              type="button"
                               className="doc-card-action-btn"
                               title="Download original file"
-                              onClick={(e) => e.stopPropagation()}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                triggerDocumentDownload(doc.file_url, doc.file_name);
+                              }}
                             >
                               <Download size={13} />
-                            </a>
+                            </button>
                           )}
                           <button
                             type="button"

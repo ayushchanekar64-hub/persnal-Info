@@ -18,19 +18,18 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 
-export default function Header({
+function Header({
   activeTab = 'dashboard',
   setActiveTab,
   theme,
   setTheme,
-  searchQuery,
-  setSearchQuery,
   onOpenQuickAction,
   onToggleMobileMenu,
   onOpenHUD,
   onOpenTriage
 }) {
   const { user, setAuthModalOpen, openAuth } = useAuth();
+  const [searchQuery, setSearchQuery] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -51,18 +50,18 @@ export default function Header({
 
   // Fetch real notifications when authenticated
   useEffect(() => {
-    if (user) {
+    if (user?.id) {
       api.notifications.list()
         .then(setNotifications)
         .catch(() => setNotifications([]));
     } else {
       setNotifications([]);
     }
-  }, [user]);
+  }, [user?.id]);
 
   // Live global search debounce
   useEffect(() => {
-    if (!searchQuery || !searchQuery.trim() || !user) {
+    if (!searchQuery || !searchQuery.trim() || !user?.id) {
       setSearchResults(null);
       return;
     }
@@ -80,7 +79,7 @@ export default function Header({
     }, 250);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, user]);
+  }, [searchQuery, user?.id]);
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
@@ -378,3 +377,5 @@ export default function Header({
     </header>
   );
 }
+
+export default React.memo(Header);

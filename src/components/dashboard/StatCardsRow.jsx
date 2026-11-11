@@ -10,7 +10,7 @@ import {
   Sparkles
 } from 'lucide-react';
 
-export default function StatCardsRow({ stats = {}, tasks = [] }) {
+export default React.memo(function StatCardsRow({ stats = {}, tasks = [] }) {
   const completedTasks = tasks.filter(t => t.completed).length;
   const totalTasks = tasks.length;
   const activeGoals = stats.activeGoals || 0;
@@ -121,4 +121,4 @@ export default function StatCardsRow({ stats = {}, tasks = [] }) {
       })}
     </div>
   );
-}
+});

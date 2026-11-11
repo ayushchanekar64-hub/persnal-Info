@@ -71,8 +71,6 @@ h1, h2, h3, h4, h5, h6 {
 =================================================== */
 .nexus-card {
   background: var(--bg-surface);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   padding: 1.25rem 1.4rem;
@@ -103,8 +101,6 @@ h1, h2, h3, h4, h5, h6 {
 /* Glass Surface */
 .glass-surface {
   background: var(--glass-bg);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--glass-border);
 }
 
@@ -760,14 +756,14 @@ h1, h2, h3, h4, h5, h6 {
   height: 100vh;
   inset: 0;
   background: rgba(0, 0, 0, 0.72);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   z-index: 10000;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  animation: fadeIn 0.18s ease-out;
+  animation: fadeIn 0.16s ease-out;
   overflow-y: auto;
 }
 
@@ -873,14 +869,12 @@ h1, h2, h3, h4, h5, h6 {
   position: fixed;
   top: 15%;
   right: 10%;
-  width: 500px;
-  height: 500px;
+  width: 520px;
+  height: 520px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, rgba(99, 102, 241, 0.03) 50%, transparent 70%);
-  filter: blur(60px);
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.09) 0%, rgba(99, 102, 241, 0.03) 45%, transparent 70%);
   pointer-events: none;
   z-index: 0;
-  animation: authOrbFloat 12s ease-in-out infinite alternate;
 }
 
 @keyframes authOrbFloat {
@@ -1318,10 +1312,9 @@ h1, h2, h3, h4, h5, h6 {
 .auth-suggestions-card {
   margin-top: 0.75rem;
   padding: 0.85rem;
-  background: rgba(15, 23, 42, 0.85);
+  background: rgba(15, 23, 42, 0.95);
   border: 1px solid rgba(139, 92, 246, 0.35);
   border-radius: 10px;
-  backdrop-filter: blur(12px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
@@ -1553,14 +1546,13 @@ h1, h2, h3, h4, h5, h6 {
 .auth-showcase-container {
   width: 100%;
   max-width: 520px;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.025) 0%, rgba(124, 58, 237, 0.05) 100%);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(124, 58, 237, 0.06) 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 28px;
   padding: 3rem 2.75rem;
   position: relative;
   overflow: hidden;
-  backdrop-filter: blur(20px);
-  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.8), 0 0 50px rgba(124, 58, 237, 0.12);
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.8), 0 0 40px rgba(124, 58, 237, 0.12);
 }
 
 .auth-showcase-pill {
@@ -1816,9 +1808,9 @@ h1, h2, h3, h4, h5, h6 {
   position: fixed;
   inset: 0;
   z-index: 100001;
-  background: rgba(0, 0, 0, 0.82);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.86);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;

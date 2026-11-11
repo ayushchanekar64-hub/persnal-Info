@@ -28,15 +28,23 @@ import {
   Image as ImageIcon
 } from 'lucide-react';
 import { api } from '../../services/api';
+import { triggerDocumentDownload } from '../../utils/download';
 import AddEditMemberModal from '../modals/AddEditMemberModal';
 import FamilySubModal from '../modals/FamilySubModal';
 import DocumentViewerModal from '../modals/DocumentViewerModal';
 import '../../styles/family.css';
 
+// Module-level caches keyed by user id so navigating back and forth is instant
+const familyMembersCache = new Map();
+const familyDetailCache = new Map();
+
 export default function FamilyView({ user, onNavigate }) {
+  const userCacheKey = user?.id || 'default';
+  const cachedMembers = familyMembersCache.get(userCacheKey);
+
   // State
-  const [members, setMembers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [members, setMembers] = useState(() => cachedMembers || []);
+  const [loading, setLoading] = useState(!cachedMembers);
   const [selectedMemberId, setSelectedMemberId] = useState(null);
   const [memberDetail, setMemberDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
@@ -64,50 +72,75 @@ export default function FamilyView({ user, onNavigate }) {
     setTimeout(() => setStatusMsg(null), 3500);
   };
 
+  // Clear caches if user signs out
+  useEffect(() => {
+    const handleAuthChange = (e) => {
+      if (!e.detail?.user) {
+        familyMembersCache.clear();
+        familyDetailCache.clear();
+      }
+    };
+    window.addEventListener('mindos:auth-change', handleAuthChange);
+    return () => window.removeEventListener('mindos:auth-change', handleAuthChange);
+  }, []);
+
   // --------------------------------------------------------------------------
   // Fetch All Members
   // --------------------------------------------------------------------------
-  const fetchMembers = useCallback(async () => {
+  const fetchMembers = useCallback(async ({ silent = false } = {}) => {
     try {
-      setLoading(true);
+      if (!silent) setLoading(true);
       const data = await api.family.list();
-      setMembers(Array.isArray(data) ? data : []);
+      const normalized = Array.isArray(data) ? data : [];
+      familyMembersCache.set(userCacheKey, normalized);
+      setMembers(normalized);
     } catch (err) {
       console.warn('Failed to load family members:', err.message);
       showStatus('Unable to load family members from vault', true);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
-  }, []);
+  }, [userCacheKey]);
 
   useEffect(() => {
-    fetchMembers();
-  }, [fetchMembers]);
+    const hasCached = familyMembersCache.has(userCacheKey);
+    fetchMembers({ silent: hasCached });
+  }, [fetchMembers, userCacheKey]);
 
   // --------------------------------------------------------------------------
   // Fetch Detailed Member Profile
   // --------------------------------------------------------------------------
-  const fetchMemberDetail = useCallback(async (id) => {
+  const fetchMemberDetail = useCallback(async (id, { silent = false } = {}) => {
     if (!id) return;
+    const detailKey = `${userCacheKey}:${id}`;
     try {
-      setDetailLoading(true);
+      if (!silent) setDetailLoading(true);
       const data = await api.family.get(id);
+      if (data) {
+        familyDetailCache.set(detailKey, data);
+      }
       setMemberDetail(data);
     } catch (err) {
       console.warn('Failed to load member detail:', err.message);
       showStatus('Failed to load full member profile', true);
     } finally {
-      setDetailLoading(false);
+      if (!silent) setDetailLoading(false);
     }
-  }, []);
+  }, [userCacheKey]);
 
   useEffect(() => {
     if (selectedMemberId) {
-      fetchMemberDetail(selectedMemberId);
+      const cachedDetail = familyDetailCache.get(`${userCacheKey}:${selectedMemberId}`);
+      if (cachedDetail) {
+        setMemberDetail(cachedDetail);
+        fetchMemberDetail(selectedMemberId, { silent: true });
+      } else {
+        fetchMemberDetail(selectedMemberId);
+      }
     } else {
       setMemberDetail(null);
     }
-  }, [selectedMemberId, fetchMemberDetail]);
+  }, [selectedMemberId, fetchMemberDetail, userCacheKey]);
 
   // --------------------------------------------------------------------------
   // CRUD Actions
@@ -117,6 +150,9 @@ export default function FamilyView({ user, onNavigate }) {
       // Update
       const updated = await api.family.update(editingMemberData.id, formData);
       showStatus(`${formData.full_name} updated successfully`);
+      if (updated) {
+        familyDetailCache.set(`${userCacheKey}:${editingMemberData.id}`, updated);
+      }
       if (selectedMemberId === editingMemberData.id) {
         setMemberDetail(updated);
       }
@@ -125,7 +161,7 @@ export default function FamilyView({ user, onNavigate }) {
       await api.family.create(formData);
       showStatus(`Family member ${formData.full_name} added to vault`);
     }
-    fetchMembers();
+    fetchMembers({ silent: true });
   };
 
   const handleDeleteMember = async (memberId, memberName) => {
@@ -134,11 +170,12 @@ export default function FamilyView({ user, onNavigate }) {
     }
     try {
       await api.family.delete(memberId);
+      familyDetailCache.delete(`${userCacheKey}:${memberId}`);
       showStatus(`${memberName} removed from family vault`);
       if (selectedMemberId === memberId) {
         setSelectedMemberId(null);
       }
-      fetchMembers();
+      fetchMembers({ silent: true });
     } catch (err) {
       showStatus('Failed to delete member', true);
     }
@@ -161,8 +198,8 @@ export default function FamilyView({ user, onNavigate }) {
         await api.family.addContact(selectedMemberId, subFormData);
         showStatus('Contact recorded');
       }
-      fetchMemberDetail(selectedMemberId);
-      fetchMembers();
+      fetchMemberDetail(selectedMemberId, { silent: true });
+      fetchMembers({ silent: true });
     } catch (err) {
       showStatus(`Failed to add ${subModalType}`, true);
     }
@@ -172,7 +209,8 @@ export default function FamilyView({ user, onNavigate }) {
     if (!window.confirm('Delete this education record?')) return;
     try {
       await api.family.deleteEducation(selectedMemberId, eduId);
-      fetchMemberDetail(selectedMemberId);
+      fetchMemberDetail(selectedMemberId, { silent: true });
+      fetchMembers({ silent: true });
       showStatus('Education record deleted');
     } catch {
       showStatus('Failed to delete education record', true);
@@ -183,7 +221,8 @@ export default function FamilyView({ user, onNavigate }) {
     if (!window.confirm('Delete this career record?')) return;
     try {
       await api.family.deleteCareer(selectedMemberId, careerId);
-      fetchMemberDetail(selectedMemberId);
+      fetchMemberDetail(selectedMemberId, { silent: true });
+      fetchMembers({ silent: true });
       showStatus('Career record deleted');
     } catch {
       showStatus('Failed to delete career record', true);
@@ -194,7 +233,8 @@ export default function FamilyView({ user, onNavigate }) {
     if (!window.confirm('Remove this document from the vault?')) return;
     try {
       await api.family.deleteDocument(selectedMemberId, docId);
-      fetchMemberDetail(selectedMemberId);
+      fetchMemberDetail(selectedMemberId, { silent: true });
+      fetchMembers({ silent: true });
       showStatus('Document removed from vault');
     } catch {
       showStatus('Failed to delete document', true);
@@ -205,7 +245,7 @@ export default function FamilyView({ user, onNavigate }) {
     if (!window.confirm('Delete this contact?')) return;
     try {
       await api.family.deleteContact(selectedMemberId, contactId);
-      fetchMemberDetail(selectedMemberId);
+      fetchMemberDetail(selectedMemberId, { silent: true });
       showStatus('Contact deleted');
     } catch {
       showStatus('Failed to delete contact', true);
@@ -217,7 +257,11 @@ export default function FamilyView({ user, onNavigate }) {
     if (!selectedMemberId) return;
     try {
       await api.family.update(selectedMemberId, { [fieldName]: val });
-      setMemberDetail(prev => ({ ...prev, [fieldName]: val }));
+      setMemberDetail(prev => {
+        const next = { ...prev, [fieldName]: val };
+        familyDetailCache.set(`${userCacheKey}:${selectedMemberId}`, next);
+        return next;
+      });
       showStatus('Saved successfully');
     } catch {
       showStatus('Failed to save changes', true);
@@ -311,7 +355,7 @@ export default function FamilyView({ user, onNavigate }) {
           <div className="family-hero-left">
             <div className="family-hero-avatar-wrap">
               {memberDetail.profile_photo ? (
-                <img src={memberDetail.profile_photo} alt={memberDetail.full_name} className="family-hero-avatar-img" />
+                <img src={memberDetail.profile_photo} alt={memberDetail.full_name} className="family-hero-avatar-img" loading="lazy" decoding="async" />
               ) : (
                 <div className="family-hero-avatar-fallback">
                   {memberDetail.full_name?.charAt(0)?.toUpperCase() || 'M'}
@@ -767,15 +811,17 @@ export default function FamilyView({ user, onNavigate }) {
                               <span>Preview</span>
                             </button>
                             {doc.file_url && (
-                              <a
-                                href={doc.file_url}
-                                download={doc.file_name}
+                              <button
+                                type="button"
                                 className="doc-card-action-btn"
                                 title="Download Document"
-                                onClick={(e) => e.stopPropagation()}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  triggerDocumentDownload(doc.file_url, doc.file_name);
+                                }}
                               >
                                 <Download size={13} />
-                              </a>
+                              </button>
                             )}
                             <button
                               type="button"
@@ -1180,7 +1226,7 @@ export default function FamilyView({ user, onNavigate }) {
               <div className="family-card-header">
                 <div className="family-avatar-wrap">
                   {m.profile_photo ? (
-                    <img src={m.profile_photo} alt={m.full_name} className="family-avatar-img" />
+                    <img src={m.profile_photo} alt={m.full_name} className="family-avatar-img" loading="lazy" decoding="async" />
                   ) : (
                     <div className="family-avatar-fallback">
                       {m.full_name?.charAt(0)?.toUpperCase() || 'M'}

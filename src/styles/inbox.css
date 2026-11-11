@@ -8,9 +8,9 @@
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(10, 11, 15, 0.65);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: rgba(10, 11, 15, 0.78);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -39,8 +39,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  animation: hudScaleIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  transition: all 0.2s ease;
+  animation: hudScaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
 }
 
 [data-theme="light"] .frictionless-hud-container {
@@ -95,8 +95,7 @@
   height: 7px;
   border-radius: 50%;
   background: #10B981;
-  box-shadow: 0 0 10px #10B981;
-  animation: hudDotPulse 1.8s infinite;
+  box-shadow: 0 0 8px #10B981;
 }
 
 @keyframes hudDotPulse {
@@ -377,8 +376,8 @@
   position: fixed;
   inset: 0;
   z-index: 9990;
-  background: rgba(10, 11, 15, 0.7);
-  backdrop-filter: blur(12px);
+  background: rgba(10, 11, 15, 0.8);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -541,9 +540,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1.25rem;
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(15, 23, 42, 0.97);
   border: 1px solid rgba(124, 58, 237, 0.35);
   border-radius: var(--radius-full);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(124, 58, 237, 0.25);

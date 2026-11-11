@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
-export default function Sidebar({
+export default React.memo(function Sidebar({
   activeTab,
   setActiveTab,
   isCollapsed,
@@ -286,5 +286,4 @@ export default function Sidebar({
       </div>
     </aside>
   );
-}
-
+});

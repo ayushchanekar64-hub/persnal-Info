@@ -9,7 +9,7 @@ import {
   Plus
 } from 'lucide-react';
 
-export default function LearningAndCoding({
+export default React.memo(function LearningAndCoding({
   learning = { skills: [], weeklyHours: 0 },
   coding = { solvedTotal: 0, thisWeek: 0, streakDays: 0, topics: [] },
   onOpenQuickAction
@@ -109,4 +109,4 @@ export default function LearningAndCoding({
       </div>
     </div>
   );
-}
+});

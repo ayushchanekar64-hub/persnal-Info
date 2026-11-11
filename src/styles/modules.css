@@ -435,7 +435,6 @@
 
 .habit-streak-pill.fire {
   box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
-  animation: pulseFire 2.5s infinite;
 }
 
 @keyframes pulseFire {

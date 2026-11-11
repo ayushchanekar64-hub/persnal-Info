@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { api, setToken } from '../services/api';
 
 const AuthContext = createContext(null);
@@ -22,8 +22,17 @@ export function AuthProvider({ children }) {
       if (storedToken) {
         try {
           const currentUser = await api.auth.getMe();
-          setUser(currentUser);
-          localStorage.setItem('mindos_user', JSON.stringify(currentUser));
+          const currentSerialized = JSON.stringify(currentUser);
+          setUser((prev) => {
+            if (prev) {
+              const { _loginTs, ...rest } = prev;
+              if (JSON.stringify(rest) === currentSerialized) {
+                return prev;
+              }
+            }
+            return currentUser;
+          });
+          localStorage.setItem('mindos_user', currentSerialized);
         } catch (err) {
           console.warn('Session expired or invalid:', err.message);
           setToken(null);
@@ -43,7 +52,7 @@ export function AuthProvider({ children }) {
     initAuth();
   }, []);
 
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
     const data = await api.auth.login({ email, password });
     if (data.two_factor_required) {
       return { two_factor_required: true, two_factor_token: data.two_factor_token, user: data.user };
@@ -55,9 +64,9 @@ export function AuthProvider({ children }) {
     setAuthScreen(null);
     window.dispatchEvent(new CustomEvent('mindos:auth-change', { detail: { user: updatedUser, token: data.access_token } }));
     return updatedUser;
-  };
+  }, []);
 
-  const verify2FA = async (twoFactorToken, securityPin) => {
+  const verify2FA = useCallback(async (twoFactorToken, securityPin) => {
     const data = await api.auth.login2FA(twoFactorToken, securityPin);
     setToken(data.access_token);
     const updatedUser = { ...data.user, _loginTs: Date.now() };
@@ -66,9 +75,9 @@ export function AuthProvider({ children }) {
     setAuthScreen(null);
     window.dispatchEvent(new CustomEvent('mindos:auth-change', { detail: { user: updatedUser, token: data.access_token } }));
     return updatedUser;
-  };
+  }, []);
 
-  const register = async (email, password, name, recoveryPin, accessKey, phone = null) => {
+  const register = useCallback(async (email, password, name, recoveryPin, accessKey, phone = null) => {
     const payload = {
       email,
       password,
@@ -85,16 +94,16 @@ export function AuthProvider({ children }) {
     setAuthScreen(null);
     window.dispatchEvent(new CustomEvent('mindos:auth-change', { detail: { user: updatedUser, token: data.access_token } }));
     return updatedUser;
-  };
+  }, []);
 
-  const setRecoveryPin = async (recoveryPin) => {
+  const setRecoveryPin = useCallback(async (recoveryPin) => {
     const updatedUser = await api.auth.setRecoveryPin(recoveryPin);
     setUser(updatedUser);
     localStorage.setItem('mindos_user', JSON.stringify(updatedUser));
     return updatedUser;
-  };
+  }, []);
 
-  const googleLogin = async (googleData) => {
+  const googleLogin = useCallback(async (googleData) => {
     const data = await api.auth.googleLogin({
       email: googleData.email,
       name: googleData.name,
@@ -109,55 +118,73 @@ export function AuthProvider({ children }) {
     setAuthScreen(null);
     window.dispatchEvent(new CustomEvent('mindos:auth-change', { detail: { user: updatedUser, token: data.access_token } }));
     return updatedUser;
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setToken(null);
     setUser(null);
     localStorage.removeItem('mindos_user');
     localStorage.removeItem('ayora_user');
     localStorage.removeItem('mynexus_user');
     window.dispatchEvent(new CustomEvent('mindos:auth-change', { detail: { user: null, token: null } }));
-  };
+  }, []);
 
-  const updateProfile = async (profileData) => {
+  const updateProfile = useCallback(async (profileData) => {
     const updated = await api.auth.updateProfile(profileData);
     setUser(updated);
     localStorage.setItem('mindos_user', JSON.stringify(updated));
     return updated;
-  };
+  }, []);
 
-  const openAuth = (flow = 'signin') => {
+  const openAuth = useCallback((flow = 'signin') => {
     setAuthScreen(flow);
-  };
+  }, []);
 
-  const closeAuth = () => {
+  const closeAuth = useCallback(() => {
     setAuthScreen(null);
-  };
+  }, []);
+
+  const setAuthModalOpen = useCallback((val) => {
+    setAuthScreen(val ? 'signin' : null);
+  }, []);
+
+  const contextValue = useMemo(() => ({
+    user,
+    loading,
+    isAuthenticated: !!user,
+    hasRecoveryPin: !!user?.has_recovery_pin,
+    login,
+    verify2FA,
+    register,
+    setRecoveryPin,
+    googleLogin,
+    logout,
+    updateProfile,
+    authScreen,
+    setAuthScreen,
+    openAuth,
+    closeAuth,
+    // Backward-compatible aliases:
+    authModalOpen: !!authScreen,
+    setAuthModalOpen
+  }), [
+    user,
+    loading,
+    login,
+    verify2FA,
+    register,
+    setRecoveryPin,
+    googleLogin,
+    logout,
+    updateProfile,
+    authScreen,
+    openAuth,
+    closeAuth,
+    setAuthModalOpen
+  ]);
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        isAuthenticated: !!user,
-        hasRecoveryPin: !!user?.has_recovery_pin,
-        login,
-        verify2FA,
-        register,
-        setRecoveryPin,
-        googleLogin,
-        logout,
-        updateProfile,
-        authScreen,
-        setAuthScreen,
-        openAuth,
-        closeAuth,
-        // Backward-compatible aliases:
-        authModalOpen: !!authScreen,
-        setAuthModalOpen: (val) => setAuthScreen(val ? 'signin' : null)
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
